@@ -90,7 +90,7 @@ class RegisterView(APIView):
                 profile_data = {
                     "qualification": profile.qualification,
                     "mobile_no": profile.mobile_no,
-                    "address": profile.address
+                    "experience": profile.experience
                 }
             else:
                 role = 'unknown'
@@ -132,7 +132,7 @@ class LoginView(APIView):
                 profile_data = {
                     "qualification": profile.qualification,
                     "mobile_no": profile.mobile_no,
-                    "address": profile.address
+                    "experience": profile.experience
                 }
             else:
                 role = 'unknown'

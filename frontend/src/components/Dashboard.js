@@ -9,7 +9,7 @@ function Dashboard({ user, setUser }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const endpoint = user.role === "student" ? "../enrollment/" : "../course/";
+        const endpoint = user.role === "student" ? "/enrollment/" : "/course/";
         const response = await API.get(endpoint, {
           headers: { Authorization: `Token ${localStorage.getItem("token")}` }
         });

@@ -11,7 +11,7 @@ function Register() {
     role: "student",
     qualification: "",
     mobile_no: "",
-    address: "",
+    experience: "",
     interested_categories: "",
   });
 

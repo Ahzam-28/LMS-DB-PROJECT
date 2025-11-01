@@ -78,18 +78,20 @@ class RegisterSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(choices=[('student', 'Student'), ('teacher', 'Teacher')])
     qualification = serializers.CharField(required=True)
     mobile_no = serializers.CharField(required=True)
-    address = serializers.CharField(required=False, allow_blank=True)
+    experience = serializers.IntegerField(required=False)
     interested_categories = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'role', 'qualification', 'mobile_no', 'address', 'interested_categories']
+        fields = ['username', 'email', 'password', 'role', 'qualification', 'mobile_no', 'experience', 'interested_categories']
 
     def create(self, validated_data):
         role = validated_data.pop('role')
         password = validated_data.pop('password')
         username = validated_data.pop('username')
         email = validated_data.pop('email')
+        # Validate for role first 
+        # BEfore creating user/student
 
         # Create user with hashed password
         user = User.objects.create_user(username=username, email=email, password=password)
@@ -107,7 +109,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 user=user,
                 qualification=validated_data.get('qualification', ''),
                 mobile_no=validated_data.get('mobile_no', ''),
-                address=validated_data.get('address', '')
+                experience=validated_data.get('experience', '')
             )
 
         return user
