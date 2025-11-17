@@ -568,9 +568,151 @@ class QuizViewSet(viewsets.ModelViewSet):
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    
+    def get_permissions(self):
+        """
+        GET requests are allowed for anyone (AllowAny)
+        POST/PATCH/DELETE require authentication (IsAuthenticated)
+        """
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+    
+    def get_queryset(self):
+        """Filter questions by quiz if provided in query params"""
+        queryset = Question.objects.all()
+        quiz_id = self.request.query_params.get('quiz', None)
+        if quiz_id:
+            queryset = queryset.filter(quiz=quiz_id)
+        return queryset
+    
+    def perform_create(self, serializer):
+        """Only teachers can create questions for their quizzes"""
+        quiz_id = self.request.data.get('quiz')
+        user = self.request.user
+        
+        try:
+            teacher = Teacher.objects.get(user=user)
+            quiz = Quiz.objects.get(id=quiz_id)
+            
+            # Check if teacher owns the course
+            if quiz.lesson_category.course.teacher != teacher:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You can only add questions to your own quizzes")
+            
+            serializer.save()
+        except Teacher.DoesNotExist:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only teachers can create questions")
+        except Quiz.DoesNotExist:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("Quiz not found")
+    
+    def perform_update(self, serializer):
+        """Only teachers can update questions"""
+        question = self.get_object()
+        user = self.request.user
+        
+        try:
+            teacher = Teacher.objects.get(user=user)
+            
+            # Check if teacher owns the course
+            if question.quiz.lesson_category.course.teacher != teacher:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You can only edit questions in your own quizzes")
+            
+            serializer.save()
+        except Teacher.DoesNotExist:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only teachers can edit questions")
+    
+    def perform_destroy(self, instance):
+        """Only teachers can delete questions"""
+        user = self.request.user
+        
+        try:
+            teacher = Teacher.objects.get(user=user)
+            
+            # Check if teacher owns the course
+            if instance.quiz.lesson_category.course.teacher != teacher:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You can only delete questions from your own quizzes")
+            
+            instance.delete()
+        except Teacher.DoesNotExist:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only teachers can delete questions")
+
+
 class AnswerViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
+    
+    def get_permissions(self):
+        """
+        GET requests are allowed for anyone (AllowAny)
+        POST/PATCH/DELETE require authentication (IsAuthenticated)
+        """
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+    
+    def perform_create(self, serializer):
+        """Only teachers can create answers for their questions"""
+        question_id = self.request.data.get('question')
+        user = self.request.user
+        
+        try:
+            teacher = Teacher.objects.get(user=user)
+            question = Question.objects.get(id=question_id)
+            
+            # Check if teacher owns the course
+            if question.quiz.lesson_category.course.teacher != teacher:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You can only add answers to your own questions")
+            
+            serializer.save()
+        except Teacher.DoesNotExist:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only teachers can create answers")
+        except Question.DoesNotExist:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("Question not found")
+    
+    def perform_update(self, serializer):
+        """Only teachers can update answers"""
+        answer = self.get_object()
+        user = self.request.user
+        
+        try:
+            teacher = Teacher.objects.get(user=user)
+            
+            # Check if teacher owns the course
+            if answer.question.quiz.lesson_category.course.teacher != teacher:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You can only edit answers in your own quizzes")
+            
+            serializer.save()
+        except Teacher.DoesNotExist:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only teachers can edit answers")
+    
+    def perform_destroy(self, instance):
+        """Only teachers can delete answers"""
+        user = self.request.user
+        
+        try:
+            teacher = Teacher.objects.get(user=user)
+            
+            # Check if teacher owns the course
+            if instance.question.quiz.lesson_category.course.teacher != teacher:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You can only delete answers from your own quizzes")
+            
+            instance.delete()
+        except Teacher.DoesNotExist:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only teachers can delete answers")
 class ResultViewSet(viewsets.ModelViewSet):
     queryset = Result.objects.all()
     serializer_class = ResultSerializer

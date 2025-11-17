@@ -110,14 +110,20 @@ class QuizSerializer(serializers.ModelSerializer):
         model = Quiz
         fields = ['id', 'lesson_category', 'title', 'description', 'total_marks', 'duration', 'order']
         read_only_fields = ['id']
-class QuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Question
-        fields = '__all__'
+
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
-        fields = '__all__'
+        fields = ['id', 'question', 'text', 'is_correct']
+        read_only_fields = ['id']
+
+class QuestionSerializer(serializers.ModelSerializer):
+    answers = AnswerSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Question
+        fields = ['id', 'quiz', 'text', 'marks', 'answers']
+        read_only_fields = ['id']
 class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result

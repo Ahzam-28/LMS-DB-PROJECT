@@ -174,6 +174,7 @@ class Quiz(models.Model):
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     text = models.TextField()
+    marks = models.IntegerField(default=1)  # Marks for this question
 
     def __str__(self):
         return f"{self.quiz.title} - {self.text[:50]}"

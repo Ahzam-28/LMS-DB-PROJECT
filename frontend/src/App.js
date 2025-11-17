@@ -8,6 +8,7 @@ import Dashboard from "./components/Dashboard";
 import CourseDetail from "./components/CourseDetail";
 import CourseEnrollment from "./components/CourseEnrollment";
 import TeacherProfile from "./components/TeacherProfile";
+import Quiz from "./components/Quiz";
 
 // Protected route wrapper component
 function ProtectedRoute({ user, requiredRole, children, redirectTo = "/login" }) {
@@ -48,6 +49,9 @@ function App() {
 
         {/* Course details - public, but enrollment requires login */}
         <Route path="/courses/:id" element={<CourseDetail />} />
+
+        {/* Quiz page */}
+        <Route path="/quiz/:id" element={<Quiz />} />
 
         {/* Course enrollment page - always accessible, but redirects handle login requirements */}
         <Route path="/courses" element={<CourseEnrollment />} />

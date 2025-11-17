@@ -16,7 +16,9 @@ function CourseDetail() {
   const [lessons, setLessons] = useState([]);
   const [lessonCategories, setLessonCategories] = useState([]);
   const [expandedCategories, setExpandedCategories] = useState(new Set());
+  const [expandedQuizzes, setExpandedQuizzes] = useState(new Set());
   const [completedLessons, setCompletedLessons] = useState(new Set());
+  const [completedQuizzes, setCompletedQuizzes] = useState(new Set());
   const [showAddLesson, setShowAddLesson] = useState(false);
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [editingLessonId, setEditingLessonId] = useState(null);
@@ -52,6 +54,14 @@ function CourseDetail() {
     lesson_category: null,
   });
   const [submittingQuiz, setSubmittingQuiz] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState([]); // Questions for current quiz being created
+  const [currentQuestion, setCurrentQuestion] = useState({
+    text: "",
+    marks: 1,
+  });
+  const [currentAnswers, setCurrentAnswers] = useState([]);
+  const [currentAnswerText, setCurrentAnswerText] = useState("");
+  const [currentAnswerCorrect, setCurrentAnswerCorrect] = useState(false);
   const [showAddFile, setShowAddFile] = useState({});
   const [editingFileId, setEditingFileId] = useState(null);
   const [fileFormData, setFileFormData] = useState({
@@ -92,10 +102,16 @@ function CourseDetail() {
         console.log("Lesson categories fetched:", categoriesResponse.data);
         setLessonCategories(categoriesResponse.data);
 
-        // Fetch all quizzes for this course (we'll filter by category in frontend)
+        // Fetch all quizzes and filter by lesson categories in this course
         const quizzesResponse = await API.get(`/quiz/`);
         console.log("Quizzes fetched:", quizzesResponse.data);
-        setQuizzes(quizzesResponse.data);
+        
+        // Filter quizzes to only those belonging to categories in this course
+        const categoryIds = categoriesResponse.data.map(cat => cat.id);
+        const courseQuizzes = quizzesResponse.data.filter(quiz => 
+          categoryIds.includes(quiz.lesson_category)
+        );
+        setQuizzes(courseQuizzes);
         
         setLoading(false);
       } catch (error) {
@@ -322,6 +338,17 @@ function CourseDetail() {
     try {
       await API.delete(`/lesson-category/${categoryId}/`);
       setLessonCategories(lessonCategories.filter((cat) => cat.id !== categoryId));
+      
+      // Remove lessons that belong to this category
+      const lessonsToRemove = lessons.filter((lesson) => lesson.category === categoryId);
+      const updatedLessons = lessons.filter((lesson) => lesson.category !== categoryId);
+      setLessons(updatedLessons);
+      
+      // Remove completion status for lessons in this category
+      const newCompleted = new Set(completedLessons);
+      lessonsToRemove.forEach((lesson) => newCompleted.delete(lesson.id));
+      setCompletedLessons(newCompleted);
+      
       alert("Category deleted successfully!");
     } catch (error) {
       console.error("Failed to delete category:", error);
@@ -378,6 +405,12 @@ function CourseDetail() {
     try {
       await API.delete(`/lesson/${lessonId}/`);
       setLessons(lessons.filter((lesson) => lesson.id !== lessonId));
+      
+      // Remove completion status for this lesson
+      const newCompleted = new Set(completedLessons);
+      newCompleted.delete(lessonId);
+      setCompletedLessons(newCompleted);
+      
       alert("Lesson deleted successfully!");
     } catch (error) {
       console.error("Failed to delete lesson:", error);
@@ -405,6 +438,28 @@ function CourseDetail() {
       newCompleted.add(lessonId);
     }
     setCompletedLessons(newCompleted);
+  };
+
+  const handleToggleQuizCompletion = (quizId) => {
+    // If not logged in, redirect to login
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    // If student but not enrolled, show error
+    if (user.role === "student" && !isEnrolled) {
+      alert("You must be enrolled in this course to complete quizzes");
+      return;
+    }
+
+    const newCompleted = new Set(completedQuizzes);
+    if (newCompleted.has(quizId)) {
+      newCompleted.delete(quizId);
+    } else {
+      newCompleted.add(quizId);
+    }
+    setCompletedQuizzes(newCompleted);
   };
 
   const handleWatchVideo = (e, videoUrl) => {
@@ -478,6 +533,18 @@ function CourseDetail() {
       return;
     }
 
+    if (quizQuestions.length === 0) {
+      alert("Please add at least one question to the quiz");
+      return;
+    }
+
+    // Validate total marks
+    const totalQuestionMarks = quizQuestions.reduce((sum, q) => sum + q.marks, 0);
+    if (totalQuestionMarks > parseInt(quizFormData.total_marks)) {
+      alert(`Total question marks (${totalQuestionMarks}) cannot exceed quiz total marks (${quizFormData.total_marks})`);
+      return;
+    }
+
     setSubmittingQuiz(true);
     try {
       const payload = {
@@ -488,17 +555,47 @@ function CourseDetail() {
         duration: parseInt(quizFormData.duration),
       };
 
+      let quizId;
       if (editingQuizId) {
         await API.patch(`/quiz/${editingQuizId}/`, payload);
         setQuizzes(quizzes.map(q => q.id === editingQuizId ? {...q, ...payload} : q));
+        quizId = editingQuizId;
         setEditingQuizId(null);
-        alert("Quiz updated successfully!");
       } else {
         const response = await API.post("/quiz/", payload);
         setQuizzes([...quizzes, response.data]);
-        alert("Quiz added successfully!");
+        quizId = response.data.id;
       }
 
+      // Save questions and answers
+      for (const question of quizQuestions) {
+        try {
+          const questionPayload = {
+            quiz: quizId,
+            text: question.text,
+            marks: question.marks,
+          };
+          const questionResponse = await API.post("/question/", questionPayload);
+          const questionId = questionResponse.data.id;
+
+          // Save answers for this question
+          for (const answer of question.answers) {
+            const answerPayload = {
+              question: questionId,
+              text: answer.text,
+              is_correct: answer.is_correct,
+            };
+            await API.post("/answer/", answerPayload);
+          }
+        } catch (error) {
+          console.error("Failed to save question/answers:", error);
+          throw new Error("Failed to save questions and answers");
+        }
+      }
+
+      alert("Quiz with questions added successfully!");
+
+      // Reset form
       setQuizFormData({
         title: "",
         description: "",
@@ -506,6 +603,11 @@ function CourseDetail() {
         duration: "",
         lesson_category: null,
       });
+      setQuizQuestions([]);
+      setCurrentQuestion({ text: "", marks: 1 });
+      setCurrentAnswers([]);
+      setCurrentAnswerText("");
+      setCurrentAnswerCorrect(false);
       setShowAddQuiz({});
     } catch (error) {
       console.error("Failed to add/update quiz:", error);
@@ -535,6 +637,12 @@ function CourseDetail() {
     try {
       await API.delete(`/quiz/${quizId}/`);
       setQuizzes(quizzes.filter(q => q.id !== quizId));
+      
+      // Remove completion status for this quiz
+      const newCompleted = new Set(completedQuizzes);
+      newCompleted.delete(quizId);
+      setCompletedQuizzes(newCompleted);
+      
       alert("Quiz deleted successfully!");
     } catch (error) {
       console.error("Failed to delete quiz:", error);
@@ -544,6 +652,72 @@ function CourseDetail() {
 
   const getQuizzesByCategory = (categoryId) => {
     return quizzes.filter((quiz) => quiz.lesson_category === categoryId);
+  };
+
+  const handleAddAnswer = () => {
+    if (!currentAnswerText.trim()) {
+      alert("Please enter answer text");
+      return;
+    }
+    
+    // If marking as correct, unmark all others
+    let newAnswers = currentAnswers.map(a => ({ ...a, is_correct: false }));
+    newAnswers.push({
+      id: Date.now(), // Temporary ID for new answers
+      text: currentAnswerText,
+      is_correct: currentAnswerCorrect,
+    });
+    
+    setCurrentAnswers(newAnswers);
+    setCurrentAnswerText("");
+    setCurrentAnswerCorrect(false);
+  };
+
+  const handleRemoveAnswer = (answerId) => {
+    setCurrentAnswers(currentAnswers.filter(a => a.id !== answerId));
+  };
+
+  const handleToggleCorrectAnswer = (answerId) => {
+    setCurrentAnswers(currentAnswers.map(a => ({
+      ...a,
+      is_correct: a.id === answerId ? true : false,
+    })));
+  };
+
+  const handleAddQuestionToQuiz = () => {
+    if (!currentQuestion.text.trim()) {
+      alert("Please enter question text");
+      return;
+    }
+    
+    if (currentAnswers.length === 0) {
+      alert("Please add at least one answer");
+      return;
+    }
+    
+    if (!currentAnswers.some(a => a.is_correct)) {
+      alert("Please mark at least one answer as correct");
+      return;
+    }
+    
+    setQuizQuestions([
+      ...quizQuestions,
+      {
+        id: Date.now(),
+        text: currentQuestion.text,
+        marks: currentQuestion.marks,
+        answers: currentAnswers,
+      }
+    ]);
+    
+    setCurrentQuestion({ text: "", marks: 1 });
+    setCurrentAnswers([]);
+    setCurrentAnswerText("");
+    setCurrentAnswerCorrect(false);
+  };
+
+  const handleRemoveQuestionFromQuiz = (questionId) => {
+    setQuizQuestions(quizQuestions.filter(q => q.id !== questionId));
   };
 
   const handleAddFile = async (e, lessonId) => {
@@ -674,6 +848,16 @@ function CourseDetail() {
       newExpanded.add(categoryId);
     }
     setExpandedCategories(newExpanded);
+  };
+
+  const toggleQuizzes = (categoryId) => {
+    const newExpanded = new Set(expandedQuizzes);
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId);
+    } else {
+      newExpanded.add(categoryId);
+    }
+    setExpandedQuizzes(newExpanded);
   };
 
   const getLessonsByCategory = (categoryId) => {
@@ -808,6 +992,46 @@ function CourseDetail() {
                       👥 {course.enrollment_count} {course.enrollment_count === 1 ? "Student" : "Students"}
                     </span>
                   </p>
+
+                  {/* Progress Bar for Enrolled Users */}
+                  {isEnrolled && (
+                    <div className="progress-section mt-3 mb-3">
+                      {(() => {
+                        const totalItems = lessons.length + quizzes.length;
+                        const completedItems = completedLessons.size + completedQuizzes.size;
+                        const progressPercentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+                        
+                        return (
+                          <>
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                              <strong>Course Progress</strong>
+                              <span className="badge bg-primary">
+                                {completedItems} / {totalItems} Items ({lessons.length} Lessons, {quizzes.length} Quizzes)
+                              </span>
+                            </div>
+                            <div className="progress" style={{ height: "25px" }}>
+                              <div
+                                className="progress-bar bg-success"
+                                role="progressbar"
+                                style={{
+                                  width: `${progressPercentage}%`,
+                                }}
+                                aria-valuenow={completedItems}
+                                aria-valuemin="0"
+                                aria-valuemax={totalItems}
+                              >
+                                {totalItems > 0 && (
+                                  <span style={{ color: "white", fontSize: "0.9rem", fontWeight: "600" }}>
+                                    {Math.round(progressPercentage)}%
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
 
                   <hr />
 
@@ -1037,24 +1261,13 @@ function CourseDetail() {
 
                         return (
                           <div key={category.id} className="lesson-category-section">
-                            <div
-                              className="lesson-category-header"
-                              style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                            >
-                              <div
-                                onClick={() => toggleCategory(category.id)}
-                                style={{ flex: 1, display: "flex", alignItems: "center" }}
-                              >
-                                <i
-                                  className={`fas fa-chevron-${isExpanded ? "down" : "right"} me-2`}
-                                ></i>
+                            <div className="lesson-category-header">
+                              <div style={{ flex: 1 }}>
                                 <h6 className="mb-0">{category.title}</h6>
-                                <span className="badge bg-secondary ms-2">
-                                  {categoryLessons.length}
-                                </span>
+                                <small className="text-muted d-block">{category.description}</small>
                               </div>
                               {isTeacher && (
-                                <div className="category-actions ms-2" onClick={(e) => e.stopPropagation()}>
+                                <div className="category-actions ms-2">
                                   <button
                                     className="btn btn-sm btn-outline-warning"
                                     onClick={() => handleEditCategory(category)}
@@ -1071,6 +1284,14 @@ function CourseDetail() {
                                   </button>
                                 </div>
                               )}
+                              <button
+                                className={`btn btn-sm ${isExpanded ? "btn-info" : "btn-outline-info"} ms-2`}
+                                onClick={() => toggleCategory(category.id)}
+                                title={isExpanded ? "Hide category" : "Show category"}
+                              >
+                                <i className={`fas fa-chevron-${isExpanded ? "up" : "down"} me-1`}></i>
+                                {isExpanded ? "Hide" : "Show"}
+                              </button>
                             </div>
 
                             {isExpanded && (
@@ -1270,14 +1491,25 @@ function CourseDetail() {
                             <div className="mt-3 pt-3 border-top">
                               <div className="d-flex justify-content-between align-items-center mb-2">
                                 <h6 className="mb-0">Quizzes</h6>
-                                {isTeacher && (
-                                  <button
-                                    className="btn btn-sm btn-info"
-                                    onClick={() => setShowAddQuiz({ ...showAddQuiz, [category.id]: !showAddQuiz[category.id] })}
-                                  >
-                                    {showAddQuiz[category.id] ? "Cancel" : "+ Add Quiz"}
-                                  </button>
-                                )}
+                                <div className="d-flex gap-2">
+                                  {isTeacher && (
+                                    <button
+                                      className="btn btn-sm btn-success"
+                                      onClick={() => setShowAddQuiz({ ...showAddQuiz, [category.id]: !showAddQuiz[category.id] })}
+                                    >
+                                      {showAddQuiz[category.id] ? "Cancel" : "+ Add Quiz"}
+                                    </button>
+                                  )}
+                                  {getQuizzesByCategory(category.id).length > 0 && (
+                                    <button
+                                      className={`btn btn-sm ${expandedQuizzes.has(category.id) ? "btn-info" : "btn-outline-info"}`}
+                                      onClick={() => toggleQuizzes(category.id)}
+                                    >
+                                      <i className={`fas fa-chevron-${expandedQuizzes.has(category.id) ? "up" : "down"} me-1`}></i>
+                                      {expandedQuizzes.has(category.id) ? "Hide" : "Show"} Quizzes
+                                    </button>
+                                  )}
+                                </div>
                               </div>
 
                               {isTeacher && showAddQuiz[category.id] && (
@@ -1323,6 +1555,116 @@ function CourseDetail() {
                                       />
                                     </div>
                                   </div>
+
+                                  {/* Questions Management */}
+                                  <div className="border rounded p-2 mb-3 bg-light">
+                                    <h6 className="mb-2">Questions ({quizQuestions.length})</h6>
+                                    
+                                    {/* Add Question Form */}
+                                    <div className="mb-3 p-2 bg-white border rounded">
+                                      <div className="mb-2">
+                                        <label className="form-label mb-1 small">Question Text</label>
+                                        <textarea
+                                          className="form-control form-control-sm"
+                                          placeholder="Enter question text"
+                                          rows="2"
+                                          value={currentQuestion.text}
+                                          onChange={(e) => setCurrentQuestion({ ...currentQuestion, text: e.target.value })}
+                                        ></textarea>
+                                      </div>
+                                      <div className="mb-2">
+                                        <label className="form-label mb-1 small">Marks</label>
+                                        <input
+                                          type="number"
+                                          min="1"
+                                          className="form-control form-control-sm"
+                                          value={currentQuestion.marks}
+                                          onChange={(e) => setCurrentQuestion({ ...currentQuestion, marks: parseInt(e.target.value) || 1 })}
+                                        />
+                                      </div>
+
+                                      {/* Answers for current question */}
+                                      <div className="mb-2">
+                                        <label className="form-label mb-1 small">Answers</label>
+                                        {currentAnswers.map((answer, idx) => (
+                                          <div key={answer.id} className="d-flex gap-2 mb-2 align-items-center">
+                                            <input
+                                              type="checkbox"
+                                              checked={answer.is_correct}
+                                              onChange={() => handleToggleCorrectAnswer(answer.id)}
+                                              title="Mark as correct answer"
+                                            />
+                                            <span className="flex-grow-1 small">{answer.text}</span>
+                                            <button
+                                              type="button"
+                                              className="btn btn-sm btn-outline-danger"
+                                              onClick={() => handleRemoveAnswer(answer.id)}
+                                              title="Delete this answer"
+                                            >
+                                              <i className="fas fa-trash me-1"></i>Delete
+                                            </button>
+                                          </div>
+                                        ))}
+                                        <div className="d-flex gap-2">
+                                          <input
+                                            type="text"
+                                            className="form-control form-control-sm"
+                                            placeholder="Answer text"
+                                            value={currentAnswerText}
+                                            onChange={(e) => setCurrentAnswerText(e.target.value)}
+                                          />
+                                          <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-primary"
+                                            onClick={handleAddAnswer}
+                                          >
+                                            Add
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      <button
+                                        type="button"
+                                        className="btn btn-sm btn-primary"
+                                        onClick={handleAddQuestionToQuiz}
+                                      >
+                                        Add Question to Quiz
+                                      </button>
+                                    </div>
+
+                                    {/* List of added questions */}
+                                    {quizQuestions.length > 0 && (
+                                      <div>
+                                        {quizQuestions.map((question, idx) => (
+                                          <div key={question.id} className="mb-2 p-2 bg-white border rounded small">
+                                            <div className="d-flex justify-content-between align-items-start">
+                                              <div className="flex-grow-1">
+                                                <div className="mb-1">
+                                                  <strong>Q{idx + 1}:</strong> {question.text}
+                                                  <span className="badge bg-info ms-2">{question.marks} marks</span>
+                                                </div>
+                                                <div className="text-muted">
+                                                  {question.answers.length} answers
+                                                  {question.answers.some(a => a.is_correct) && (
+                                                    <span className="badge bg-success ms-1">Correct answer set</span>
+                                                  )}
+                                                </div>
+                                              </div>
+                                              <button
+                                                type="button"
+                                                className="btn btn-sm btn-outline-danger"
+                                                onClick={() => handleRemoveQuestionFromQuiz(question.id)}
+                                                title="Delete this question"
+                                              >
+                                                <i className="fas fa-trash me-1"></i>Delete
+                                              </button>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+
                                   <div className="d-flex gap-2">
                                     <button
                                       type="submit"
@@ -1344,6 +1686,11 @@ function CourseDetail() {
                                           duration: "",
                                           lesson_category: null,
                                         });
+                                        setQuizQuestions([]);
+                                        setCurrentQuestion({ text: "", marks: 1 });
+                                        setCurrentAnswers([]);
+                                        setCurrentAnswerText("");
+                                        setCurrentAnswerCorrect(false);
                                       }}
                                       disabled={submittingQuiz}
                                     >
@@ -1354,17 +1701,48 @@ function CourseDetail() {
                                 )}
 
                                 {/* Display quizzes */}
-                                {getQuizzesByCategory(category.id).map((quiz) => (
+                                {expandedQuizzes.has(category.id) && getQuizzesByCategory(category.id).map((quiz) => (
                                   <div key={quiz.id} className="alert alert-info mb-2" role="alert">
                                     <div className="d-flex justify-content-between align-items-start">
                                       <div className="flex-grow-1">
-                                        <h6 className="mb-1">📝 {quiz.title}</h6>
+                                        <div className="quiz-header mb-1">
+                                          <input
+                                            type="checkbox"
+                                            className="quiz-checkbox"
+                                            checked={completedQuizzes.has(quiz.id)}
+                                            onChange={() => handleToggleQuizCompletion(quiz.id)}
+                                            disabled={!isEnrolled && user?.role === "student"}
+                                            title={
+                                              !isEnrolled && user?.role === "student"
+                                                ? "Enroll to mark quizzes as complete"
+                                                : isEnrolled || isTeacher
+                                                ? "Mark as complete"
+                                                : !user
+                                                ? "Login to mark quizzes as complete"
+                                                : ""
+                                            }
+                                            style={{
+                                              cursor: isEnrolled || isTeacher || !user ? "pointer" : "not-allowed",
+                                            }}
+                                          />
+                                          <h6 className="quiz-title">
+                                            📝 {quiz.title}
+                                            {isEnrolled && completedQuizzes.has(quiz.id) && (
+                                              <span className="badge bg-success ms-2">
+                                                <i className="fas fa-check"></i> Completed
+                                              </span>
+                                            )}
+                                          </h6>
+                                        </div>
                                         <small>{quiz.description}</small>
                                         <div className="mt-1 small text-muted">
                                           Marks: {quiz.total_marks} | Duration: {quiz.duration} mins
                                         </div>
                                         {isEnrolled && (
-                                          <button className="btn btn-sm btn-success mt-2">
+                                          <button 
+                                            className="btn btn-sm btn-success mt-2"
+                                            onClick={() => navigate(`/quiz/${quiz.id}`)}
+                                          >
                                             <i className="fas fa-play-circle me-1"></i>Take Quiz
                                           </button>
                                         )}
