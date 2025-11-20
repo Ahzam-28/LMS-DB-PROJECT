@@ -1195,8 +1195,23 @@ function CourseDetail() {
                   {isEnrolled && (
                     <div className="progress-section mt-3 mb-3">
                       {(() => {
-                        const totalItems = lessons.length + quizzes.length;
-                        const completedItems = completedLessons.size + completedQuizzes.size;
+                        const totalLessons = lessons.length;
+                        const totalQuizzes = quizzes.length;
+                        const totalItems = totalLessons + totalQuizzes;
+                        
+                        // Count actually completed items
+                        let completedItems = 0;
+                        lessons.forEach(lesson => {
+                          if (completedLessons.has(lesson.id)) {
+                            completedItems++;
+                          }
+                        });
+                        quizzes.forEach(quiz => {
+                          if (completedQuizzes.has(quiz.id)) {
+                            completedItems++;
+                          }
+                        });
+                        
                         const progressPercentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
                         
                         return (
@@ -1204,27 +1219,31 @@ function CourseDetail() {
                             <div className="d-flex justify-content-between align-items-center mb-2">
                               <strong>Course Progress</strong>
                               <span className="badge bg-primary">
-                                {completedItems} / {totalItems} Items ({lessons.length} Lessons, {quizzes.length} Quizzes)
+                                {completedItems} / {totalItems} Items ({totalLessons} Lessons, {totalQuizzes} Quizzes)
                               </span>
                             </div>
-                            <div className="progress" style={{ height: "25px" }}>
+                            <div className="progress" style={{ height: "30px", backgroundColor: "#e9ecef" }}>
                               <div
                                 className="progress-bar bg-success"
                                 role="progressbar"
                                 style={{
                                   width: `${progressPercentage}%`,
+                                  transition: "width 0.3s ease",
                                 }}
                                 aria-valuenow={completedItems}
                                 aria-valuemin="0"
                                 aria-valuemax={totalItems}
                               >
-                                {totalItems > 0 && (
-                                  <span style={{ color: "white", fontSize: "0.9rem", fontWeight: "600" }}>
+                                {totalItems > 0 && progressPercentage > 5 && (
+                                  <span style={{ color: "white", fontSize: "0.85rem", fontWeight: "600", marginLeft: "5px" }}>
                                     {Math.round(progressPercentage)}%
                                   </span>
                                 )}
                               </div>
                             </div>
+                            {totalItems === 0 && (
+                              <p className="text-muted small mt-2">No lessons or quizzes yet</p>
+                            )}
                           </>
                         );
                       })()}
@@ -1453,7 +1472,13 @@ function CourseDetail() {
                     )}
                     <div className="lessons-list">
                       {/* Render lesson categories */}
-                      {lessonCategories.map((category) => {
+                      {lessonCategories
+                        .filter((category) => {
+                          const categoryLessons = getLessonsByCategory(category.id);
+                          // Teachers see all categories, students only see categories with lessons
+                          return isTeacher || categoryLessons.length > 0;
+                        })
+                        .map((category) => {
                         const categoryLessons = getLessonsByCategory(category.id);
                         const isExpanded = expandedCategories.has(category.id);
 
@@ -1930,19 +1955,6 @@ function CourseDetail() {
                                                 <i className="fas fa-check"></i> Completed
                                               </span>
                                             )}
-                                            {isEnrolled && quizResults[quiz.id] ? (
-                                              <span className={`badge ms-2 ${
-                                                quizResults[quiz.id].grade_awarded === 'A' ? 'bg-success' :
-                                                quizResults[quiz.id].grade_awarded === 'B' ? 'bg-info' :
-                                                quizResults[quiz.id].grade_awarded === 'C' ? 'bg-warning' :
-                                                quizResults[quiz.id].grade_awarded === 'D' ? 'bg-warning text-dark' :
-                                                'bg-danger'
-                                              }`}>
-                                                Grade: {quizResults[quiz.id].grade_awarded}
-                                              </span>
-                                            ) : isEnrolled ? (
-                                              <span className="badge bg-secondary ms-2">Ungraded</span>
-                                            ) : null}
                                           </h6>
                                         </div>
                                         <small>{quiz.description}</small>
@@ -2087,7 +2099,7 @@ function CourseDetail() {
                             {enrolling ? "Enrolling..." : "Enroll Now"}
                           </button>
                           <p className="mt-2 text-center text-muted">
-                            <small>Price: ${parseFloat(course.price).toFixed(2)}</small>
+                            <small>Price: PKR {parseFloat(course.price).toFixed(2)}</small>
                           </p>
                         </>
                       )}
@@ -2140,7 +2152,7 @@ function CourseDetail() {
                   <div className="d-flex justify-content-between align-items-center">
                     <span><strong>Total Amount:</strong></span>
                     <span><strong className="text-success" style={{ fontSize: "1.5rem" }}>
-                      ${parseFloat(course.price).toFixed(2)}
+                      PKR {parseFloat(course.price).toFixed(2)}
                     </strong></span>
                   </div>
                 </div>
@@ -2356,7 +2368,7 @@ function CourseDetail() {
                   ) : (
                     <>
                       <i className="fas fa-check-circle me-2"></i>
-                      Pay ${parseFloat(course.price).toFixed(2)}
+                      Pay PKR {parseFloat(course.price).toFixed(2)}
                     </>
                   )}
                 </button>

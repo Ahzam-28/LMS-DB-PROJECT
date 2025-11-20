@@ -475,7 +475,7 @@ function Dashboard({ user, setUser }) {
 
                           <div className="row">
                             <div className="col-md-6 mb-3">
-                              <label className="form-label">Price ($) *</label>
+                              <label className="form-label">Price (PKR) *</label>
                               <input
                                 type="number"
                                 className="form-control"
@@ -636,7 +636,7 @@ function Dashboard({ user, setUser }) {
                           <div className="course-info mt-3">
                             <p className="mb-1">
                               <small className="text-muted">
-                                <strong>Price:</strong> ${parseFloat(course.price).toFixed(2)}
+                                <strong>Price:</strong> PKR {parseFloat(course.price).toFixed(2)}
                               </small>
                             </p>
                           </div>

@@ -11,6 +11,23 @@ function CourseEnrollment() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [categories, setCategories] = useState([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [paymentDetails, setPaymentDetails] = useState({
+    method: "credit-card",
+    cardholderName: "",
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    easypaisaNumber: "",
+    bankAccountHolder: "",
+    bankAccountNumber: "",
+  });
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpVerifying, setOtpVerifying] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -76,18 +93,147 @@ function CourseEnrollment() {
       return;
     }
 
+    // Find the course
+    const course = courses.find(c => c.id === courseId);
+    if (!course) return;
+
+    // If course is free, enroll directly
+    if (parseFloat(course.price) === 0) {
+      try {
+        await API.post("/enrollment/enroll_course/", {
+          course_id: courseId,
+          status: "active",
+        });
+        setEnrolledCourses([...enrolledCourses, courseId]);
+        alert("Successfully enrolled in the course!");
+      } catch (error) {
+        console.error("Enrollment failed:", error);
+        alert(
+          error.response?.data?.error || "Failed to enroll. Please try again."
+        );
+      }
+    } else {
+      // Paid course - show payment modal
+      setSelectedCourse(course);
+      setShowPaymentModal(true);
+      setError(null);
+      setOtpSent(false);
+      setOtpVerified(false);
+      setOtpCode("");
+      setPaymentDetails({
+        method: "credit-card",
+        cardholderName: "",
+        cardNumber: "",
+        expiryDate: "",
+        cvv: "",
+        easypaisaNumber: "",
+        bankAccountHolder: "",
+        bankAccountNumber: "",
+      });
+    }
+  };
+
+  const handleSendOTP = async () => {
+    if (!paymentDetails.easypaisaNumber) {
+      setError("Please enter Easypaisa number");
+      return;
+    }
+
+    if (!user?.email) {
+      setError("Email address not found. Please update your profile.");
+      return;
+    }
+
     try {
+      const response = await API.post("/otp/send_otp/", {
+        phone_number: paymentDetails.easypaisaNumber,
+        email: user.email
+      });
+
+      if (response.data.success) {
+        setOtpSent(true);
+        setError(null);
+        alert("OTP sent to your email!");
+      } else {
+        setError(response.data.message);
+      }
+    } catch (error) {
+      console.error("OTP send failed:", error);
+      setError("Failed to send OTP. Please try again.");
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (!otpCode) {
+      setError("Please enter OTP");
+      return;
+    }
+
+    setOtpVerifying(true);
+    try {
+      const response = await API.post("/otp/verify_otp/", {
+        phone_number: paymentDetails.easypaisaNumber,
+        otp_code: otpCode
+      });
+
+      if (response.data.success) {
+        setOtpVerified(true);
+        setError(null);
+      } else {
+        setError(response.data.message);
+      }
+    } catch (error) {
+      console.error("OTP verification failed:", error);
+      setError("Failed to verify OTP. Please try again.");
+    } finally {
+      setOtpVerifying(false);
+    }
+  };
+
+  const handlePayment = async () => {
+    if (!selectedCourse) return;
+
+    // Validate payment method
+    if (paymentDetails.method === "credit-card") {
+      if (!paymentDetails.cardholderName || !paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv) {
+        setError("Please fill in all card details");
+        return;
+      }
+    } else if (paymentDetails.method === "easypaisa") {
+      if (!otpVerified) {
+        setError("Please verify OTP first");
+        return;
+      }
+    } else if (paymentDetails.method === "bank-transfer") {
+      if (!paymentDetails.bankAccountHolder || !paymentDetails.bankAccountNumber) {
+        setError("Please fill in all bank details");
+        return;
+      }
+    }
+
+    try {
+      // Create payment record
+      const paymentResponse = await API.post("/payment/", {
+        course: selectedCourse.id,
+        amount: parseFloat(selectedCourse.price),
+        payment_method: paymentDetails.method === "credit-card" ? "Credit Card" : paymentDetails.method === "easypaisa" ? "Easypaisa" : "Bank Transfer",
+        payment_status: "completed"
+      });
+
+      // Enroll the student
       await API.post("/enrollment/enroll_course/", {
-        course_id: courseId,
+        course_id: selectedCourse.id,
         status: "active",
       });
-      setEnrolledCourses([...enrolledCourses, courseId]);
-      alert("Successfully enrolled in the course!");
+
+      setEnrolledCourses([...enrolledCourses, selectedCourse.id]);
+      alert("Payment successful! You have been enrolled in the course.");
+      setShowPaymentModal(false);
+      setSelectedCourse(null);
+      setError(null);
     } catch (error) {
-      console.error("Enrollment failed:", error);
-      alert(
-        error.response?.data?.error || "Failed to enroll. Please try again."
-      );
+      console.error("Payment failed:", error);
+      setError(error.response?.data?.error || "Payment failed. Please try again.");
     }
   };
 
@@ -212,7 +358,7 @@ function CourseEnrollment() {
 
                     <div className="course-meta">
                       <p className="mb-2">
-                        <strong>Price:</strong> ${parseFloat(course.price).toFixed(2)}
+                        <strong>Price:</strong> PKR {parseFloat(course.price).toFixed(2)}
                       </p>
                     </div>
 
@@ -271,6 +417,229 @@ function CourseEnrollment() {
             </div>
           </div>
         </div>
+
+        {/* Payment Modal */}
+        {showPaymentModal && selectedCourse && (
+          <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header bg-primary text-white">
+                  <h5 className="modal-title">Complete Your Payment</h5>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={() => setShowPaymentModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  {error && (
+                    <div className="alert alert-danger" role="alert">
+                      {error}
+                    </div>
+                  )}
+                  
+                  <div className="mb-3">
+                    <h6>Course: {selectedCourse.title}</h6>
+                    <h6 className="text-primary">Amount: PKR {parseFloat(selectedCourse.price).toFixed(2)}</h6>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Payment Method</label>
+                    <select
+                      className="form-select"
+                      value={paymentDetails.method}
+                      onChange={(e) => {
+                        setPaymentDetails({ ...paymentDetails, method: e.target.value });
+                        setOtpSent(false);
+                        setOtpVerified(false);
+                        setOtpCode("");
+                        setError(null);
+                      }}
+                    >
+                      <option value="credit-card">Credit Card</option>
+                      <option value="easypaisa">Easypaisa</option>
+                      <option value="bank-transfer">Bank Transfer</option>
+                    </select>
+                  </div>
+
+                  {/* Credit Card Form */}
+                  {paymentDetails.method === "credit-card" && (
+                    <div>
+                      <div className="mb-3">
+                        <label className="form-label">Cardholder Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={paymentDetails.cardholderName}
+                          onChange={(e) =>
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              cardholderName: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">Card Number</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="1234 5678 9012 3456"
+                          value={paymentDetails.cardNumber}
+                          onChange={(e) =>
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              cardNumber: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">Expiry Date</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="MM/YY"
+                            value={paymentDetails.expiryDate}
+                            onChange={(e) =>
+                              setPaymentDetails({
+                                ...paymentDetails,
+                                expiryDate: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <label className="form-label">CVV</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="123"
+                            value={paymentDetails.cvv}
+                            onChange={(e) =>
+                              setPaymentDetails({
+                                ...paymentDetails,
+                                cvv: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Easypaisa Form */}
+                  {paymentDetails.method === "easypaisa" && (
+                    <div>
+                      <div className="mb-3">
+                        <label className="form-label">Easypaisa Phone Number</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="+923001234567"
+                          value={paymentDetails.easypaisaNumber}
+                          onChange={(e) =>
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              easypaisaNumber: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      {!otpSent ? (
+                        <button
+                          className="btn btn-info w-100 mb-3"
+                          onClick={handleSendOTP}
+                        >
+                          Send OTP
+                        </button>
+                      ) : (
+                        <div>
+                          <div className="alert alert-info">
+                            OTP sent to your email
+                          </div>
+                          <div className="mb-3">
+                            <label className="form-label">Enter OTP</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="000000"
+                              value={otpCode}
+                              onChange={(e) => setOtpCode(e.target.value)}
+                            />
+                          </div>
+                          <button
+                            className="btn btn-success w-100 mb-3"
+                            onClick={handleVerifyOTP}
+                            disabled={otpVerifying}
+                          >
+                            {otpVerifying ? "Verifying..." : "Verify OTP"}
+                          </button>
+                          {otpVerified && (
+                            <div className="alert alert-success">
+                              ✓ OTP Verified Successfully
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Bank Transfer Form */}
+                  {paymentDetails.method === "bank-transfer" && (
+                    <div>
+                      <div className="mb-3">
+                        <label className="form-label">Account Holder Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={paymentDetails.bankAccountHolder}
+                          onChange={(e) =>
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              bankAccountHolder: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">Account Number</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={paymentDetails.bankAccountNumber}
+                          onChange={(e) =>
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              bankAccountNumber: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <button
+                    className="btn btn-success"
+                    onClick={handlePayment}
+                    disabled={paymentDetails.method === "easypaisa" && !otpVerified}
+                  >
+                    Pay Now
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => setShowPaymentModal(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

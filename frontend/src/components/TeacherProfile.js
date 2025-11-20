@@ -140,7 +140,7 @@ function TeacherProfile() {
                         </p>
                         <div className="course-item-footer">
                           <span className="price">
-                            ${parseFloat(course.price).toFixed(2)}
+                            PKR {parseFloat(course.price).toFixed(2)}
                           </span>
                           <button
                             className="btn btn-sm btn-outline-primary"

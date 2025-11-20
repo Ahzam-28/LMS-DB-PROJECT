@@ -7,9 +7,15 @@ function HomePage() {
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [teacherScrollPosition, setTeacherScrollPosition] = useState(0);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+
     const fetchCourses = async () => {
       try {
         const response = await API.get("/course/");
@@ -60,14 +66,16 @@ function HomePage() {
             <p className="lead">
               Explore a wide range of courses and enhance your skills
             </p>
-            <div className="hero-buttons">
-              <Link to="/login" className="btn btn-primary btn-lg me-2">
-                Login
-              </Link>
-              <Link to="/register" className="btn btn-outline-primary btn-lg">
-                Register
-              </Link>
-            </div>
+            {!user && (
+              <div className="hero-buttons">
+                <Link to="/login" className="btn btn-primary btn-lg me-2">
+                  Login
+                </Link>
+                <Link to="/register" className="btn btn-outline-primary btn-lg">
+                  Register
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -112,7 +120,7 @@ function HomePage() {
                   </p>
                   <div className="course-card-footer">
                     <span className="price">
-                      ${parseFloat(course.price).toFixed(2)}
+                      PKR {parseFloat(course.price).toFixed(2)}
                     </span>
                     <button
                       className="btn btn-sm btn-primary"
