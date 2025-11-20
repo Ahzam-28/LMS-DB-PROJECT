@@ -32,7 +32,6 @@ function Quiz() {
         setQuestions(questionsResponse.data);
         setLoading(false);
       } catch (error) {
-        console.error("Failed to fetch quiz:", error);
         setError("Failed to load quiz");
         setLoading(false);
       }
@@ -122,16 +121,12 @@ function Quiz() {
             score: percentage.toFixed(2),
             grade_awarded: grade,
           };
-          console.log("Saving result:", resultPayload);
           const resultResponse = await API.post("/result/", resultPayload);
-          console.log("Result saved:", resultResponse.data);
         } catch (error) {
-          console.error("Failed to save result:", error);
           // Don't fail the submission just because result saving failed
         }
       }
     } catch (error) {
-      console.error("Failed to submit quiz:", error);
       alert("Failed to submit quiz. Please try again.");
     }
   };

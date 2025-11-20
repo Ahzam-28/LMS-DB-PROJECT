@@ -133,17 +133,14 @@ function CourseDetail() {
 
         // Fetch lessons for this course
         const lessonsResponse = await API.get(`/lesson/?course=${id}`);
-        console.log("Lessons fetched:", lessonsResponse.data);
         setLessons(lessonsResponse.data);
 
         // Fetch lesson categories for this course
         const categoriesResponse = await API.get(`/lesson-category/?course=${id}`);
-        console.log("Lesson categories fetched:", categoriesResponse.data);
         setLessonCategories(categoriesResponse.data);
 
         // Fetch all quizzes and filter by lesson categories in this course
         const quizzesResponse = await API.get(`/quiz/`);
-        console.log("Quizzes fetched:", quizzesResponse.data);
         
         // Filter quizzes to only those belonging to categories in this course
         const categoryIds = categoriesResponse.data.map(cat => cat.id);
@@ -156,21 +153,17 @@ function CourseDetail() {
         if (user && user.role === "student") {
           try {
             const resultsResponse = await API.get(`/result/`);
-            console.log("Quiz results fetched:", resultsResponse.data);
             const resultsMap = {};
             resultsResponse.data.forEach(result => {
               resultsMap[result.quiz] = result;
             });
-            console.log("Results map:", resultsMap);
             setQuizResults(resultsMap);
           } catch (err) {
-            console.log("Error fetching quiz results:", err);
           }
         }
         
         setLoading(false);
       } catch (error) {
-        console.error("Failed to fetch course:", error);
         setLoading(false);
         setError("Failed to load course details");
       }
@@ -190,7 +183,6 @@ function CourseDetail() {
           );
           setIsEnrolled(enrolled);
         } catch (error) {
-          console.error("Failed to check enrollment:", error);
         }
       };
       checkEnrollment();
@@ -203,15 +195,12 @@ function CourseDetail() {
       const fetchResults = async () => {
         try {
           const resultsResponse = await API.get(`/result/`);
-          console.log("Quiz results from effect:", resultsResponse.data);
           const resultsMap = {};
           resultsResponse.data.forEach(result => {
             resultsMap[result.quiz] = result;
           });
-          console.log("Results map from effect:", resultsMap);
           setQuizResults(resultsMap);
         } catch (err) {
-          console.log("Error fetching quiz results in effect:", err);
         }
       };
       fetchResults();
@@ -263,7 +252,6 @@ function CourseDetail() {
       });
       alert("Successfully enrolled in the course!");
     } catch (error) {
-      console.error("Enrollment failed:", error);
       setError(
         error.response?.data?.error ||
           "Failed to enroll. Please try again."
@@ -281,10 +269,7 @@ function CourseDetail() {
 
     setPaymentProcessing(true);
     try {
-      console.log("Starting payment processing...");
-      console.log("User:", user);
-      console.log("Course:", course);
-      console.log("Payment details:", paymentDetails);
+
       
       // Create payment record
       const paymentResponse = await API.post("/payment/", {
@@ -293,14 +278,10 @@ function CourseDetail() {
         payment_status: "completed",
       });
       
-      console.log("Payment created successfully:", paymentResponse.data);
       
       // Then enroll the student
       await enrollCourse();
     } catch (error) {
-      console.error("Payment processing failed:", error);
-      console.error("Error response:", error.response?.data);
-      console.error("Error status:", error.response?.status);
       setError(
         error.response?.data?.error ||
         error.response?.data?.detail ||
@@ -337,7 +318,6 @@ function CourseDetail() {
         setError(response.data.message);
       }
     } catch (error) {
-      console.error("OTP send failed:", error);
       setError("Failed to send OTP. Please try again.");
     }
   };
@@ -363,7 +343,6 @@ function CourseDetail() {
         setError(response.data.message);
       }
     } catch (error) {
-      console.error("OTP verify failed:", error);
       setError("Failed to verify OTP. Please try again.");
     } finally {
       setOtpVerifying(false);
@@ -385,7 +364,6 @@ function CourseDetail() {
         setError(null);
         alert("Successfully unenrolled from the course!");
       } catch (error) {
-        console.error("Unenrollment failed:", error);
         setError(
           error.response?.data?.error ||
             "Failed to unenroll. Please try again."
@@ -429,7 +407,6 @@ function CourseDetail() {
       setLessonFormData({ title: "", content: "", video_url: "", category: null });
       setShowAddLesson(false);
     } catch (error) {
-      console.error("Failed to save lesson:", error);
       alert("Failed to save lesson. Please try again.");
     } finally {
       setSubmittingLesson(false);
@@ -467,7 +444,6 @@ function CourseDetail() {
       setCategoryFormData({ title: "", description: "" });
       setShowAddCategory(false);
     } catch (error) {
-      console.error("Failed to save category:", error);
       alert("Failed to save category. Please try again.");
     } finally {
       setSubmittingCategory(false);
@@ -520,7 +496,6 @@ function CourseDetail() {
       setShowAddCategory(false);
       alert("Category updated successfully!");
     } catch (error) {
-      console.error("Failed to update category:", error);
       alert("Failed to update category. Please try again.");
     } finally {
       setSubmittingCategory(false);
@@ -548,7 +523,6 @@ function CourseDetail() {
       
       alert("Category deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete category:", error);
       alert("Failed to delete category. Please try again.");
     }
   };
@@ -587,7 +561,6 @@ function CourseDetail() {
       setShowAddLesson(false);
       alert("Lesson updated successfully!");
     } catch (error) {
-      console.error("Failed to update lesson:", error);
       alert("Failed to update lesson. Please try again.");
     } finally {
       setSubmittingLesson(false);
@@ -610,7 +583,6 @@ function CourseDetail() {
       
       alert("Lesson deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete lesson:", error);
       alert("Failed to delete lesson. Please try again.");
     }
   };
@@ -705,7 +677,6 @@ function CourseDetail() {
       setEditingCourse(false);
       alert("Course updated successfully!");
     } catch (error) {
-      console.error("Failed to update course:", error);
       alert("Failed to update course. Please try again.");
     } finally {
       setSubmittingCourse(false);
@@ -722,7 +693,6 @@ function CourseDetail() {
       alert("Course deleted successfully!");
       navigate("/courses");
     } catch (error) {
-      console.error("Failed to delete course:", error);
       alert("Failed to delete course. Please try again.");
     }
   };
@@ -789,7 +759,6 @@ function CourseDetail() {
             await API.post("/answer/", answerPayload);
           }
         } catch (error) {
-          console.error("Failed to save question/answers:", error);
           throw new Error("Failed to save questions and answers");
         }
       }
@@ -811,7 +780,6 @@ function CourseDetail() {
       setCurrentAnswerCorrect(false);
       setShowAddQuiz({});
     } catch (error) {
-      console.error("Failed to add/update quiz:", error);
       alert("Failed to add/update quiz. Please try again.");
     } finally {
       setSubmittingQuiz(false);
@@ -846,7 +814,6 @@ function CourseDetail() {
       
       alert("Quiz deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete quiz:", error);
       alert("Failed to delete quiz. Please try again.");
     }
   };
@@ -976,7 +943,6 @@ function CourseDetail() {
       });
       setShowAddFile({});
     } catch (error) {
-      console.error("Failed to add/update file:", error);
       alert("Failed to add/update file. Please try again.");
     } finally {
       setSubmittingFile(false);
@@ -1014,7 +980,6 @@ function CourseDetail() {
       
       alert("File deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete file:", error);
       alert("Failed to delete file. Please try again.");
     }
   };
@@ -2208,46 +2173,10 @@ function CourseDetail() {
 
                 {/* Payment Details Fields */}
                 {paymentMethod === "credit_card" && (
-                  <div className="mb-3">
-                    <label className="form-label"><strong>Card Details</strong></label>
-                    <input
-                      type="text"
-                      className="form-control mb-2"
-                      placeholder="Cardholder Name"
-                      value={paymentDetails.cardHolder}
-                      onChange={(e) => setPaymentDetails({...paymentDetails, cardHolder: e.target.value})}
-                      disabled={paymentProcessing}
-                    />
-                    <input
-                      type="text"
-                      className="form-control mb-2"
-                      placeholder="Card Number (16 digits)"
-                      value={paymentDetails.cardNumber}
-                      onChange={(e) => setPaymentDetails({...paymentDetails, cardNumber: e.target.value})}
-                      disabled={paymentProcessing}
-                    />
-                    <div className="row">
-                      <div className="col-6">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="MM/YY"
-                          value={paymentDetails.expiry}
-                          onChange={(e) => setPaymentDetails({...paymentDetails, expiry: e.target.value})}
-                          disabled={paymentProcessing}
-                        />
-                      </div>
-                      <div className="col-6">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="CVV"
-                          value={paymentDetails.cvv}
-                          onChange={(e) => setPaymentDetails({...paymentDetails, cvv: e.target.value})}
-                          disabled={paymentProcessing}
-                        />
-                      </div>
-                    </div>
+                  <div className="mb-3 p-4 text-center bg-light rounded border-2" style={{borderColor: '#ffc107'}}>
+                    <h5 className="mb-2">🚀 Coming Soon</h5>
+                    <p className="text-muted mb-3">Credit Card payment will be available soon. Please use Easypaisa for now.</p>
+                    <span className="badge bg-warning text-dark px-3 py-2" style={{fontSize: '0.95rem'}}>COMING SOON</span>
                   </div>
                 )}
 
@@ -2313,28 +2242,10 @@ function CourseDetail() {
                 )}
 
                 {paymentMethod === "bank_transfer" && (
-                  <div className="mb-3">
-                    <label className="form-label"><strong>Bank Account Details</strong></label>
-                    <input
-                      type="text"
-                      className="form-control mb-2"
-                      placeholder="Account Holder Name"
-                      value={paymentDetails.bankAccountHolder}
-                      onChange={(e) => setPaymentDetails({...paymentDetails, bankAccountHolder: e.target.value})}
-                      disabled={paymentProcessing}
-                    />
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Account Number"
-                      value={paymentDetails.bankAccountNumber}
-                      onChange={(e) => setPaymentDetails({...paymentDetails, bankAccountNumber: e.target.value})}
-                      disabled={paymentProcessing}
-                    />
-                    <small className="text-muted d-block mt-2">
-                      <i className="fas fa-info-circle me-1"></i>
-                      Our bank details will be provided after you submit this form.
-                    </small>
+                  <div className="mb-3 p-4 text-center bg-light rounded border-2" style={{borderColor: '#ffc107'}}>
+                    <h5 className="mb-2">🚀 Coming Soon</h5>
+                    <p className="text-muted mb-3">Bank Transfer payment will be available soon. Please use Easypaisa for now.</p>
+                    <span className="badge bg-warning text-dark px-3 py-2" style={{fontSize: '0.95rem'}}>COMING SOON</span>
                   </div>
                 )}
 
@@ -2352,10 +2263,14 @@ function CourseDetail() {
                   onClick={handleProcessPayment}
                   disabled={
                     paymentProcessing ||
-                    (paymentMethod === "easypaisa" && !otpVerified)
+                    (paymentMethod === "easypaisa" && !otpVerified) ||
+                    paymentMethod === "credit_card" ||
+                    paymentMethod === "bank_transfer"
                   }
                   title={
-                    paymentMethod === "easypaisa" && !otpVerified
+                    paymentMethod === "credit_card" || paymentMethod === "bank_transfer"
+                      ? "This payment method is coming soon"
+                      : paymentMethod === "easypaisa" && !otpVerified
                       ? "Please verify your Easypaisa number first"
                       : ""
                   }

@@ -21,7 +21,6 @@ function HomePage() {
         const response = await API.get("/course/");
         setCourses(response.data);
       } catch (error) {
-        console.error("Failed to fetch courses:", error);
       }
     };
     
@@ -30,7 +29,6 @@ function HomePage() {
         const response = await API.get("/teacher/");
         setTeachers(response.data);
       } catch (error) {
-        console.error("Failed to fetch teachers:", error);
       }
     };
     

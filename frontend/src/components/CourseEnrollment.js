@@ -56,7 +56,6 @@ function CourseEnrollment() {
       setCourses(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch courses:", error);
       setLoading(false);
     }
   };
@@ -66,7 +65,6 @@ function CourseEnrollment() {
       const response = await API.get("/category/");
       setCategories(response.data);
     } catch (error) {
-      console.error("Failed to fetch categories:", error);
     }
   };
 
@@ -76,7 +74,6 @@ function CourseEnrollment() {
       const enrolledIds = response.data.map((enrollment) => enrollment.course);
       setEnrolledCourses(enrolledIds);
     } catch (error) {
-      console.error("Failed to fetch enrolled courses:", error);
     }
   };
 
@@ -107,7 +104,6 @@ function CourseEnrollment() {
         setEnrolledCourses([...enrolledCourses, courseId]);
         alert("Successfully enrolled in the course!");
       } catch (error) {
-        console.error("Enrollment failed:", error);
         alert(
           error.response?.data?.error || "Failed to enroll. Please try again."
         );
@@ -158,7 +154,6 @@ function CourseEnrollment() {
         setError(response.data.message);
       }
     } catch (error) {
-      console.error("OTP send failed:", error);
       setError("Failed to send OTP. Please try again.");
     }
   };
@@ -183,7 +178,6 @@ function CourseEnrollment() {
         setError(response.data.message);
       }
     } catch (error) {
-      console.error("OTP verification failed:", error);
       setError("Failed to verify OTP. Please try again.");
     } finally {
       setOtpVerifying(false);
@@ -232,7 +226,6 @@ function CourseEnrollment() {
       setSelectedCourse(null);
       setError(null);
     } catch (error) {
-      console.error("Payment failed:", error);
       setError(error.response?.data?.error || "Payment failed. Please try again.");
     }
   };
@@ -464,68 +457,10 @@ function CourseEnrollment() {
 
                   {/* Credit Card Form */}
                   {paymentDetails.method === "credit-card" && (
-                    <div>
-                      <div className="mb-3">
-                        <label className="form-label">Cardholder Name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={paymentDetails.cardholderName}
-                          onChange={(e) =>
-                            setPaymentDetails({
-                              ...paymentDetails,
-                              cardholderName: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Card Number</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="1234 5678 9012 3456"
-                          value={paymentDetails.cardNumber}
-                          onChange={(e) =>
-                            setPaymentDetails({
-                              ...paymentDetails,
-                              cardNumber: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6 mb-3">
-                          <label className="form-label">Expiry Date</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="MM/YY"
-                            value={paymentDetails.expiryDate}
-                            onChange={(e) =>
-                              setPaymentDetails({
-                                ...paymentDetails,
-                                expiryDate: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="col-md-6 mb-3">
-                          <label className="form-label">CVV</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="123"
-                            value={paymentDetails.cvv}
-                            onChange={(e) =>
-                              setPaymentDetails({
-                                ...paymentDetails,
-                                cvv: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
+                    <div className="p-4 text-center bg-light rounded">
+                      <h5 className="mb-2">🚀 Coming Soon</h5>
+                      <p className="text-muted mb-3">Credit Card payment will be available soon. Please use Easypaisa for now.</p>
+                      <span className="badge bg-warning text-dark px-3 py-2">COMING SOON</span>
                     </div>
                   )}
 
@@ -589,35 +524,10 @@ function CourseEnrollment() {
 
                   {/* Bank Transfer Form */}
                   {paymentDetails.method === "bank-transfer" && (
-                    <div>
-                      <div className="mb-3">
-                        <label className="form-label">Account Holder Name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={paymentDetails.bankAccountHolder}
-                          onChange={(e) =>
-                            setPaymentDetails({
-                              ...paymentDetails,
-                              bankAccountHolder: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Account Number</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={paymentDetails.bankAccountNumber}
-                          onChange={(e) =>
-                            setPaymentDetails({
-                              ...paymentDetails,
-                              bankAccountNumber: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
+                    <div className="p-4 text-center bg-light rounded">
+                      <h5 className="mb-2">🚀 Coming Soon</h5>
+                      <p className="text-muted mb-3">Bank Transfer payment will be available soon. Please use Easypaisa for now.</p>
+                      <span className="badge bg-warning text-dark px-3 py-2">COMING SOON</span>
                     </div>
                   )}
                 </div>
@@ -625,9 +535,10 @@ function CourseEnrollment() {
                   <button
                     className="btn btn-success"
                     onClick={handlePayment}
-                    disabled={paymentDetails.method === "easypaisa" && !otpVerified}
+                    disabled={paymentDetails.method === "easypaisa" && !otpVerified || paymentDetails.method === "credit-card" || paymentDetails.method === "bank-transfer"}
+                    title={paymentDetails.method === "credit-card" || paymentDetails.method === "bank-transfer" ? "This payment method is coming soon" : ""}
                   >
-                    Pay Now
+                    {paymentDetails.method === "credit-card" || paymentDetails.method === "bank-transfer" ? "Coming Soon" : "Pay Now"}
                   </button>
                   <button
                     className="btn btn-secondary"

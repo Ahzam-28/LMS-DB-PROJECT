@@ -25,7 +25,6 @@ function TeacherProfile() {
         setCourses(teacherCourses);
         setLoading(false);
       } catch (error) {
-        console.error("Failed to fetch teacher data:", error);
         setLoading(false);
       }
     };

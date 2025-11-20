@@ -53,7 +53,6 @@ function Dashboard({ user, setUser }) {
         }
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
         setLoading(false);
       }
     };
@@ -116,7 +115,6 @@ function Dashboard({ user, setUser }) {
       setShowEditModal(false);
       alert("Profile updated successfully!");
     } catch (error) {
-      console.error("Error updating profile:", error);
       alert("Failed to update profile. Please try again.");
     } finally {
       setEditLoading(false);
@@ -170,7 +168,6 @@ function Dashboard({ user, setUser }) {
       
       alert("Course created successfully!");
     } catch (error) {
-      console.error("Error creating course:", error.response?.data || error.message);
       
       // Better error messaging
       let errorMessage = "Failed to create course";
@@ -228,7 +225,6 @@ function Dashboard({ user, setUser }) {
         );
       }
     } catch (error) {
-      console.error("Error updating course:", error);
       alert("Failed to update course availability");
     }
   };
@@ -247,7 +243,6 @@ function Dashboard({ user, setUser }) {
         
         alert("Course deleted successfully!");
       } catch (error) {
-        console.error("Error deleting course:", error);
         alert(
           error.response?.data?.error ||
           "Failed to delete course. Please try again."
