@@ -20,16 +20,13 @@ def send_otp_email(phone_number, email):
     Generate OTP and send it via email
     """
     try:
-        print(f"\n🔔 OTP REQUEST: Phone={phone_number}, Email={email}")
+        print(f"\n OTP REQUEST: Phone={phone_number}, Email={email}")
         
-        # Generate OTP
         otp_code = generate_otp()
-        print(f"✅ OTP Generated: {otp_code}")
+        print(f"OTP Generated: {otp_code}")
         
-        # Calculate expiry time (5 minutes from now)
         expires_at = timezone.now() + timedelta(minutes=5)
         
-        # Create or update OTP record
         otp_obj, created = OTP.objects.update_or_create(
             phone_number=phone_number,
             defaults={
@@ -40,9 +37,8 @@ def send_otp_email(phone_number, email):
                 'attempts': 0
             }
         )
-        print(f"✅ OTP Saved to Database: ID={otp_obj.id}")
+        print(f" OTP Saved to Database: ID={otp_obj.id}")
         
-        # Send email with OTP
         subject = 'LMS Payment Verification Code'
         message = f"""
 Dear User,
@@ -75,9 +71,9 @@ LMS Team
         </html>
         """
         
-        print(f"📧 Sending email to: {email}")
-        print(f"📧 Using backend: {settings.EMAIL_BACKEND}")
-        print(f"📧 From: {settings.DEFAULT_FROM_EMAIL}")
+        print(f" Sending email to: {email}")
+        print(f" Using backend: {settings.EMAIL_BACKEND}")
+        print(f" From: {settings.DEFAULT_FROM_EMAIL}")
         
         email_result = send_mail(
             subject,
@@ -88,7 +84,7 @@ LMS Team
             fail_silently=False,
         )
         
-        print(f"✅ Email sent successfully! Result: {email_result}")
+        print(f" Email sent successfully! Result: {email_result}")
         
         return {
             'success': True,
@@ -97,7 +93,7 @@ LMS Team
         }
     
     except Exception as e:
-        error_msg = f"❌ ERROR in send_otp_email: {str(e)}"
+        error_msg = f" ERROR in send_otp_email: {str(e)}"
         print(error_msg)
         logger.error(error_msg, exc_info=True)
         return {
@@ -113,21 +109,18 @@ def verify_otp(phone_number, otp_code):
     try:
         otp_obj = OTP.objects.get(phone_number=phone_number)
         
-        # Check if OTP is expired
         if timezone.now() > otp_obj.expires_at:
             return {
                 'success': False,
                 'message': 'OTP has expired. Please request a new one.'
             }
         
-        # Check attempts
         if otp_obj.attempts >= otp_obj.max_attempts:
             return {
                 'success': False,
                 'message': f'Maximum attempts exceeded. Please request a new OTP.'
             }
         
-        # Verify OTP code
         if otp_obj.otp_code == otp_code:
             otp_obj.is_verified = True
             otp_obj.save()

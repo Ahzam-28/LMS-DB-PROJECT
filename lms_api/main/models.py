@@ -1,12 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Teacher Model
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     qualification = models.CharField(max_length=200)
     mobile_no = models.CharField(max_length=20) 
-    experience = models.IntegerField()  # in years
+    experience = models.IntegerField()
     expertise = models.TextField()
     
     def __str__(self):
@@ -16,7 +15,6 @@ class Teacher(models.Model):
         verbose_name_plural = "1. Teachers"
 
 
-# Course Category Model
 class CourseCategory(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
@@ -28,7 +26,6 @@ class CourseCategory(models.Model):
         verbose_name_plural = "2. Course Categories"
 
 
-# Course Model
 class Course(models.Model):
     category = models.ForeignKey(CourseCategory, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='courses')
@@ -46,7 +43,6 @@ class Course(models.Model):
         verbose_name_plural = "3. Courses"
 
 
-# Student Model
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     qualification = models.CharField(max_length=200)
@@ -61,7 +57,6 @@ class Student(models.Model):
         verbose_name_plural = "4. Students"
 
 
-# Enrollment Model
 class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='enrollments')
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -75,12 +70,11 @@ class Enrollment(models.Model):
         verbose_name_plural = "5. Enrollments"
 
 
-# Lesson Model
 class LessonCategory(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lesson_categories')
     title = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
-    order = models.IntegerField(default=0)  # For ordering categories
+    order = models.IntegerField(default=0)
     
     def __str__(self):
         return f"{self.course.code} - {self.title}"
@@ -97,7 +91,7 @@ class Lesson(models.Model):
     content = models.TextField()
     upload_date = models.DateField(auto_now_add=True)
     video_url = models.URLField(blank=True, null=True)
-    order = models.IntegerField(default=0)  # For ordering lessons within category
+    order = models.IntegerField(default=0)
     
     def __str__(self):
         return f"{self.course.code} - {self.title}"
@@ -107,7 +101,6 @@ class Lesson(models.Model):
         ordering = ['category', 'order']
 
 
-# Lesson File Model
 class LessonFile(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='files')
     title = models.CharField(max_length=150)
@@ -120,14 +113,12 @@ class LessonFile(models.Model):
         verbose_name_plural = "6b. Lesson Files"
 
 
-# Assignment Model
 class Assignment(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='assignments')
     title = models.CharField(max_length=150)
     description = models.TextField()
     due_date = models.DateField()
     max_marks = models.IntegerField()
-    #created_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.lesson.title} - {self.title}"
@@ -136,7 +127,6 @@ class Assignment(models.Model):
         verbose_name_plural = "7. Assignments"
 
 
-# Submission Model
 class Submission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -153,14 +143,13 @@ class Submission(models.Model):
         verbose_name_plural = "8. Submissions"
 
 
-# Quiz Model
 class Quiz(models.Model):
     lesson_category = models.ForeignKey(LessonCategory, on_delete=models.CASCADE, related_name='quizzes', null=True, blank=True)
     title = models.CharField(max_length=150)
     description = models.TextField()
     total_marks = models.IntegerField()
-    duration = models.IntegerField()  # in minutes
-    order = models.IntegerField(default=0)  # For ordering quizzes within category
+    duration = models.IntegerField()
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         category_str = self.lesson_category.title if self.lesson_category else "No Category"
@@ -170,11 +159,10 @@ class Quiz(models.Model):
         verbose_name_plural = "9. Quizzes"
         ordering = ['order']
 
-# Question Model
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     text = models.TextField()
-    marks = models.IntegerField(default=1)  # Marks for this question
+    marks = models.IntegerField(default=1)
 
     def __str__(self):
         return f"{self.quiz.title} - {self.text[:50]}"
@@ -182,7 +170,6 @@ class Question(models.Model):
     class Meta:
         verbose_name_plural = "10. Questions"
 
-# Answer Model
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     text = models.TextField()
@@ -194,7 +181,6 @@ class Answer(models.Model):
     class Meta:
         verbose_name_plural = "11. Answers"
 
-# Result Model
 class Result(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -208,7 +194,6 @@ class Result(models.Model):
         verbose_name_plural = "12. Results"
 
 
-# Payment Model
 class Payment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -223,7 +208,6 @@ class Payment(models.Model):
         verbose_name_plural = "13. Payments"
 
 
-# Feedback Model
 class Feedback(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='feedbacks')
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -237,7 +221,6 @@ class Feedback(models.Model):
         verbose_name_plural = "14. Feedbacks"
 
 
-# Resource Model
 class Resource(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='resources')
     title = models.CharField(max_length=150)
@@ -250,7 +233,6 @@ class Resource(models.Model):
         verbose_name_plural = "15. Resources"
 
 
-# File Submission Model
 class FileSubmission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='file_submissions')
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -264,9 +246,6 @@ class FileSubmission(models.Model):
     class Meta:
         verbose_name_plural = "16. File Submissions"
 
-# Message 
-
-# OTP Model for SMS Verification
 class OTP(models.Model):
     phone_number = models.CharField(max_length=20)
     otp_code = models.CharField(max_length=6)

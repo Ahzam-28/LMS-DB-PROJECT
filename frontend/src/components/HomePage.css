@@ -36,7 +36,6 @@
   color: #667eea !important;
 }
 
-/* Hero Section */
 .hero-section {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -89,7 +88,6 @@
   color: #667eea;
 }
 
-/* Courses Section */
 .courses-section {
   flex-grow: 1;
   padding: 4rem 0;
@@ -223,7 +221,6 @@
   font-size: 0.9rem;
 }
 
-/* Teachers Section */
 .teachers-section {
   padding: 4rem 0;
   background-color: #fff;
@@ -239,7 +236,7 @@
 
 .carousel-arrow {
   background: transparent;
-  color: #2d3748; /* dark gray */
+  color: #2d3748; 
   border: 1px solid rgba(45,55,72,0.08);
   border-radius: 8px;
   width: 40px;
@@ -269,10 +266,9 @@
   scroll-behavior: smooth;
   padding: 1rem 0;
   flex: 1;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  scrollbar-width: none; 
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
 .teachers-carousel::-webkit-scrollbar {
   display: none;
 }
@@ -378,7 +374,6 @@
   font-size: 0.9rem;
 }
 
-/* Footer */
 .footer {
   background-color: #333;
   color: white;
@@ -392,7 +387,6 @@
   opacity: 0.8;
 }
 
-/* Animations */
 @keyframes fadeInDown {
   from {
     opacity: 0;
@@ -415,7 +409,6 @@
   }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .hero-content h1 {
     font-size: 2rem;

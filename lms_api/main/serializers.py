@@ -160,13 +160,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         username = validated_data.pop('username')
         email = validated_data.pop('email')
-        # Validate for role first 
-        # BEfore creating user/student
 
-        # Create user with hashed password
         user = User.objects.create_user(username=username, email=email, password=password)
 
-        # Create the appropriate profile
         if role == 'student':
             Student.objects.create(
                 user=user,

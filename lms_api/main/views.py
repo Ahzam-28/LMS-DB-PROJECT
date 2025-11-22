@@ -18,10 +18,6 @@ class TeacherViewSet(viewsets.ModelViewSet):
     serializer_class = TeacherSerializer
     
     def get_permissions(self):
-        """
-        GET requests are allowed for anyone (AllowAny)
-        POST/PATCH/DELETE require authentication (IsAuthenticated)
-        """
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated()]
@@ -46,20 +42,14 @@ class CourseViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
     
     def get_queryset(self):
-        """
-        For public endpoints (list, detail): only show available courses
-        For update/delete: allow teachers to update their own courses
-        """
-        # For update/delete operations, allow access to all courses (teacher owns them)
         if self.request.method in ['PATCH', 'PUT', 'DELETE']:
-            # For write operations, return all courses - perform_update will check ownership
+               
             return Course.objects.all()
         
-        # For read operations, only return available courses
+      
         return Course.objects.filter(is_available=True)
     
     def perform_create(self, serializer):
-        """Only teachers can create courses"""
         user = self.request.user
         
         try:
@@ -70,24 +60,19 @@ class CourseViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Only teachers can create courses")
     
     def perform_update(self, serializer):
-        """Only the teacher who created the course can update it"""
         user = self.request.user
         
         try:
             teacher = Teacher.objects.get(user=user)
             course = self.get_object()
             
-            # Check if the current user is the course teacher
             if course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only update your own courses")
             
-            # Check if marking course as unavailable
             is_available_new = serializer.validated_data.get('is_available', course.is_available)
             
-            # If marking as unavailable, unenroll all students
             if course.is_available and not is_available_new:
-                # Delete all enrollments for this course
                 Enrollment.objects.filter(course=course).delete()
             
             serializer.save()
@@ -97,7 +82,6 @@ class CourseViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def my_courses(self, request):
-        """Get the current teacher's courses (including unavailable ones)"""
         user = request.user
         
         try:
@@ -129,14 +113,8 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def enroll_course(self, request):
-        """
-        Endpoint for students to enroll in a course.
-        Only students can enroll.
-        Request body: {"course_id": <int>, "status": "active"}
-        """
         user = request.user
         
-        # Check if user is a student
         try:
             student = Student.objects.get(user=user)
         except Student.DoesNotExist:
@@ -154,7 +132,6 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Check if course exists
         try:
             course = Course.objects.get(id=course_id)
         except Course.DoesNotExist:
@@ -163,7 +140,6 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
         
-        # Check if student is already enrolled
         enrollment_exists = Enrollment.objects.filter(
             student=student,
             course=course
@@ -175,7 +151,6 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Create enrollment
         enrollment = Enrollment.objects.create(
             student=student,
             course=course,
@@ -190,7 +165,6 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def my_enrollments(self, request):
-        """Get the current student's enrollments"""
         user = request.user
         
         try:
@@ -207,10 +181,6 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['delete'])
     def unenroll_course(self, request):
-        """
-        Endpoint for students to unenroll from a course.
-        Request body: {"course_id": <int>}
-        """
         user = request.user
         
         try:
@@ -266,7 +236,6 @@ class LessonViewSet(viewsets.ModelViewSet):
         return queryset
     
     def perform_create(self, serializer):
-        """Only teachers can create lessons for their own courses"""
         user = self.request.user
         course_id = self.request.data.get('course')
         
@@ -274,7 +243,6 @@ class LessonViewSet(viewsets.ModelViewSet):
             teacher = Teacher.objects.get(user=user)
             course = Course.objects.get(id=course_id)
             
-            # Check if the teacher owns this course
             if course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only add lessons to your own courses")
@@ -288,14 +256,12 @@ class LessonViewSet(viewsets.ModelViewSet):
             raise ValidationError("Course not found")
     
     def perform_update(self, serializer):
-        """Only the teacher who created the course can update lessons"""
         user = self.request.user
         lesson = self.get_object()
         
         try:
             teacher = Teacher.objects.get(user=user)
             
-            # Check if the teacher owns the course
             if lesson.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only edit lessons in your own courses")
@@ -306,13 +272,11 @@ class LessonViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Only teachers can edit lessons")
     
     def perform_destroy(self, instance):
-        """Only the teacher who created the course can delete lessons"""
         user = self.request.user
         
         try:
             teacher = Teacher.objects.get(user=user)
             
-            # Check if the teacher owns the course
             if instance.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only delete lessons in your own courses")
@@ -324,14 +288,13 @@ class LessonViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def my_lessons(self, request):
-        """Get all lessons for the current teacher's courses"""
         user = request.user
         
         try:
             teacher = Teacher.objects.get(user=user)
-            # Get all courses taught by this teacher
+            
             courses = Course.objects.filter(teacher=teacher)
-            # Get all lessons for these courses
+            
             lessons = Lesson.objects.filter(course__in=courses)
             serializer = self.get_serializer(lessons, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -346,10 +309,6 @@ class LessonCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = LessonCategorySerializer
     
     def get_permissions(self):
-        """
-        GET requests are allowed for anyone (AllowAny)
-        POST/PATCH/DELETE require authentication (IsAuthenticated)
-        """
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated()]
@@ -365,7 +324,6 @@ class LessonCategoryViewSet(viewsets.ModelViewSet):
         return queryset
     
     def perform_create(self, serializer):
-        """Only teachers can create lesson categories for their own courses"""
         user = self.request.user
         course_id = self.request.data.get('course')
         
@@ -373,7 +331,6 @@ class LessonCategoryViewSet(viewsets.ModelViewSet):
             teacher = Teacher.objects.get(user=user)
             course = Course.objects.get(id=course_id)
             
-            # Check if the teacher owns this course
             if course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only add categories to your own courses")
@@ -387,14 +344,12 @@ class LessonCategoryViewSet(viewsets.ModelViewSet):
             raise ValidationError("Course not found")
     
     def perform_update(self, serializer):
-        """Only the teacher who created the course can update categories"""
         user = self.request.user
         category = self.get_object()
         
         try:
             teacher = Teacher.objects.get(user=user)
             
-            # Check if the teacher owns the course
             if category.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only edit categories in your own courses")
@@ -405,13 +360,11 @@ class LessonCategoryViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Only teachers can edit categories")
     
     def perform_destroy(self, instance):
-        """Only the teacher who created the course can delete categories"""
         user = self.request.user
         
         try:
             teacher = Teacher.objects.get(user=user)
             
-            # Check if the teacher owns the course
             if instance.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only delete categories in your own courses")
@@ -427,10 +380,6 @@ class LessonFileViewSet(viewsets.ModelViewSet):
     serializer_class = LessonFileSerializer
 
     def get_permissions(self):
-        """
-        GET requests are allowed for anyone (AllowAny)
-        POST/PATCH/DELETE require authentication (IsAuthenticated)
-        """
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated()]
@@ -488,10 +437,6 @@ class QuizViewSet(viewsets.ModelViewSet):
     serializer_class = QuizSerializer
 
     def get_permissions(self):
-        """
-        GET requests are allowed for anyone (AllowAny)
-        POST/PATCH/DELETE require authentication (IsAuthenticated) 
-        """
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated()]
@@ -510,7 +455,6 @@ class QuizViewSet(viewsets.ModelViewSet):
         course = lesson_category.course
         user = self.request.user
         
-        # Check if user is a teacher and owns the course
         try:
             teacher = Teacher.objects.get(user=user)
             if course.teacher != teacher:
@@ -571,10 +515,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     
     def get_permissions(self):
-        """
-        GET requests are allowed for anyone (AllowAny)
-        POST/PATCH/DELETE require authentication (IsAuthenticated)
-        """
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated()]
@@ -588,7 +528,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
         return queryset
     
     def perform_create(self, serializer):
-        """Only teachers can create questions for their quizzes"""
         quiz_id = self.request.data.get('quiz')
         user = self.request.user
         
@@ -596,7 +535,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
             teacher = Teacher.objects.get(user=user)
             quiz = Quiz.objects.get(id=quiz_id)
             
-            # Check if teacher owns the course
             if quiz.lesson_category.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only add questions to your own quizzes")
@@ -610,14 +548,12 @@ class QuestionViewSet(viewsets.ModelViewSet):
             raise ValidationError("Quiz not found")
     
     def perform_update(self, serializer):
-        """Only teachers can update questions"""
         question = self.get_object()
         user = self.request.user
         
         try:
             teacher = Teacher.objects.get(user=user)
             
-            # Check if teacher owns the course
             if question.quiz.lesson_category.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only edit questions in your own quizzes")
@@ -628,13 +564,11 @@ class QuestionViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Only teachers can edit questions")
     
     def perform_destroy(self, instance):
-        """Only teachers can delete questions"""
         user = self.request.user
         
         try:
             teacher = Teacher.objects.get(user=user)
             
-            # Check if teacher owns the course
             if instance.quiz.lesson_category.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only delete questions from your own quizzes")
@@ -650,16 +584,11 @@ class AnswerViewSet(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
     
     def get_permissions(self):
-        """
-        GET requests are allowed for anyone (AllowAny)
-        POST/PATCH/DELETE require authentication (IsAuthenticated)
-        """
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated()]
     
     def perform_create(self, serializer):
-        """Only teachers can create answers for their questions"""
         question_id = self.request.data.get('question')
         user = self.request.user
         
@@ -667,7 +596,6 @@ class AnswerViewSet(viewsets.ModelViewSet):
             teacher = Teacher.objects.get(user=user)
             question = Question.objects.get(id=question_id)
             
-            # Check if teacher owns the course
             if question.quiz.lesson_category.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only add answers to your own questions")
@@ -681,14 +609,12 @@ class AnswerViewSet(viewsets.ModelViewSet):
             raise ValidationError("Question not found")
     
     def perform_update(self, serializer):
-        """Only teachers can update answers"""
         answer = self.get_object()
         user = self.request.user
         
         try:
             teacher = Teacher.objects.get(user=user)
             
-            # Check if teacher owns the course
             if answer.question.quiz.lesson_category.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only edit answers in your own quizzes")
@@ -699,13 +625,11 @@ class AnswerViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Only teachers can edit answers")
     
     def perform_destroy(self, instance):
-        """Only teachers can delete answers"""
         user = self.request.user
         
         try:
             teacher = Teacher.objects.get(user=user)
             
-            # Check if teacher owns the course
             if instance.question.quiz.lesson_category.course.teacher != teacher:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only delete answers from your own quizzes")
@@ -723,10 +647,10 @@ class ResultViewSet(viewsets.ModelViewSet):
         """Filter results to only show results for the current user if they're a student"""
         user = self.request.user
         if user.is_authenticated:
-            # If student, return only their results
+       
             if hasattr(user, 'student'):
                 return Result.objects.filter(student=user.student)
-            # If teacher, return all results (or filter by their quizzes if needed)
+           
             return Result.objects.all()
         return Result.objects.none()
 class PaymentViewSet(viewsets.ModelViewSet):
@@ -767,10 +691,9 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()  # creates User and profile
+            user = serializer.save()  
             token, _ = Token.objects.get_or_create(user=user)
 
-            # Determine role and profile data
             if hasattr(user, 'student'):
                 role = 'student'
                 profile = user.student
@@ -815,7 +738,6 @@ class LoginView(APIView):
             user = serializer.validated_data
             token, _ = Token.objects.get_or_create(user=user)
 
-            # Determine role and profile data
             if hasattr(user, 'student'):
                 role = 'student'
                 profile = user.student
@@ -856,7 +778,6 @@ class OTPViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['post'])
     def send_otp(self, request):
-        """Send OTP to user's email"""
         phone_number = request.data.get('phone_number')
         email = request.data.get('email')
         
@@ -882,7 +803,6 @@ class OTPViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['post'])
     def check_verified(self, request):
-        """Check if phone number is already verified"""
         phone_number = request.data.get('phone_number')
         if not phone_number:
             return Response({'error': 'Phone number required'}, status=status.HTTP_400_BAD_REQUEST)

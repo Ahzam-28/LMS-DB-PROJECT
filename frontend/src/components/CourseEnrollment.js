@@ -41,7 +41,6 @@ function CourseEnrollment() {
     fetchCourses();
     fetchCategories();
     
-    // Only fetch enrolled courses if user is logged in as student
     if (savedUser) {
       const userObj = JSON.parse(savedUser);
       if (userObj.role === "student") {
@@ -78,23 +77,20 @@ function CourseEnrollment() {
   };
 
   const handleEnrollClick = async (courseId) => {
-    // Check if user is logged in
+
     if (!user) {
       navigate("/login");
       return;
     }
 
-    // Check if user is a student
     if (user.role !== "student") {
       alert("Only students can enroll in courses. Please log in as a student.");
       return;
     }
 
-    // Find the course
     const course = courses.find(c => c.id === courseId);
     if (!course) return;
 
-    // If course is free, enroll directly
     if (parseFloat(course.price) === 0) {
       try {
         await API.post("/enrollment/enroll_course/", {
@@ -109,7 +105,7 @@ function CourseEnrollment() {
         );
       }
     } else {
-      // Paid course - show payment modal
+     
       setSelectedCourse(course);
       setShowPaymentModal(true);
       setError(null);
@@ -187,7 +183,6 @@ function CourseEnrollment() {
   const handlePayment = async () => {
     if (!selectedCourse) return;
 
-    // Validate payment method
     if (paymentDetails.method === "credit-card") {
       if (!paymentDetails.cardholderName || !paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv) {
         setError("Please fill in all card details");
@@ -206,7 +201,7 @@ function CourseEnrollment() {
     }
 
     try {
-      // Create payment record
+     
       const paymentResponse = await API.post("/payment/", {
         course: selectedCourse.id,
         amount: parseFloat(selectedCourse.price),
@@ -214,7 +209,6 @@ function CourseEnrollment() {
         payment_status: "completed"
       });
 
-      // Enroll the student
       await API.post("/enrollment/enroll_course/", {
         course_id: selectedCourse.id,
         status: "active",

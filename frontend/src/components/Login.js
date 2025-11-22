@@ -17,7 +17,7 @@ function Login({ setUser }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setError(""); // Clear error when user types
+    setError(""); 
   };
 
   const handleSubmit = async (e) => {
@@ -31,10 +31,8 @@ function Login({ setUser }) {
         password: formData.password,
       });
 
-      // Save token
       localStorage.setItem("token", response.data.token);
 
-      // Save full user object
       const userData = {
         username: response.data.username,
         role: response.data.role,
@@ -43,11 +41,9 @@ function Login({ setUser }) {
       };
       localStorage.setItem("user", JSON.stringify(userData));
 
-      // Update App state
       setUser(userData);
 
-      // Always redirect to homepage after login
-      localStorage.removeItem("redirectPath"); // Clear if exists
+      localStorage.removeItem("redirectPath");
       navigate("/", { replace: true });
     } catch (error) {
       setError(error.response?.data?.error || "Invalid username or password");
@@ -69,7 +65,6 @@ function Login({ setUser }) {
             <p className="auth-subtitle">Sign in to your account</p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="auth-form">
             {/* Error Message */}
             {error && (

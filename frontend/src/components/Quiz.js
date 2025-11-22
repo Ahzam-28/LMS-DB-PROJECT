@@ -25,9 +25,8 @@ function Quiz() {
       try {
         const response = await API.get(`/quiz/${id}/`);
         setQuiz(response.data);
-        setTimeRemaining(response.data.duration * 60); // Convert to seconds
+        setTimeRemaining(response.data.duration * 60); 
 
-        // Fetch questions for this quiz
         const questionsResponse = await API.get(`/question/?quiz=${id}`);
         setQuestions(questionsResponse.data);
         setLoading(false);
@@ -40,7 +39,6 @@ function Quiz() {
     fetchQuiz();
   }, [id]);
 
-  // Timer effect
   useEffect(() => {
     if (!quizStarted || submitted || timeRemaining === null) return;
 
@@ -78,21 +76,20 @@ function Quiz() {
     setSubmitted(true);
 
     try {
-      // Calculate score based on marks
+      
       let score = 0;
       let totalMarks = 0;
 
       questions.forEach((question) => {
-        totalMarks += question.marks; // Add question marks
+        totalMarks += question.marks; 
         const selectedAnswerId = answers[question.id];
         const selectedAnswer = question.answers?.find((ans) => ans.id === selectedAnswerId);
 
         if (selectedAnswer?.is_correct) {
-          score += question.marks; // Award marks for correct answer
+          score += question.marks; 
         }
       });
 
-      // Calculate percentage and grade
       const percentage = totalMarks > 0 ? (score / totalMarks) * 100 : 0;
       let grade = "F";
       if (percentage >= 90) grade = "A";
@@ -101,7 +98,6 @@ function Quiz() {
       else if (percentage >= 60) grade = "D";
       else if (percentage >= 50) grade = "E";
 
-      // Calculate marks obtained based on quiz total_marks
       const marksObtained = (score / totalMarks) * quiz.total_marks;
 
       setResult({
@@ -112,7 +108,6 @@ function Quiz() {
         grade: grade,
       });
 
-      // Save result to backend
       if (user && user.profile && user.profile.id) {
         try {
           const resultPayload = {
@@ -123,7 +118,7 @@ function Quiz() {
           };
           const resultResponse = await API.post("/result/", resultPayload);
         } catch (error) {
-          // Don't fail the submission just because result saving failed
+        
         }
       }
     } catch (error) {

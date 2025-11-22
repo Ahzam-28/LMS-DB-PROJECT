@@ -44,7 +44,7 @@ function HomePage() {
     const container = document.getElementById("teachers-carousel");
     if (!container) return;
     
-    const scrollAmount = 320; // Card width + gap
+    const scrollAmount = 320; 
     if (direction === "left") {
       container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
       setTeacherScrollPosition(Math.max(0, teacherScrollPosition - scrollAmount));

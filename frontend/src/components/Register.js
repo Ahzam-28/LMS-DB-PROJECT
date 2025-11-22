@@ -20,7 +20,7 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [step, setStep] = useState(1); // 1: Basic, 2: Details
+  const [step, setStep] = useState(1); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,7 +85,6 @@ function Register() {
     setLoading(true);
     setError("");
 
-    // Build payload depending on role
     let payload = {
       username: formData.username,
       email: formData.email,

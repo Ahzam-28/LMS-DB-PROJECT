@@ -13,11 +13,10 @@ function TeacherProfile() {
   useEffect(() => {
     const fetchTeacherData = async () => {
       try {
-        // Fetch teacher details
+
         const teacherResponse = await API.get(`/teacher/${id}/`);
         setTeacher(teacherResponse.data);
 
-        // Fetch all courses and filter by teacher
         const coursesResponse = await API.get("/course/");
         const teacherCourses = coursesResponse.data.filter(
           (course) => course.teacher === parseInt(id)

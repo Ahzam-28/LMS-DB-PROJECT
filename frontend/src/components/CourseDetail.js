@@ -91,7 +91,7 @@ function CourseDetail() {
 
   useEffect(() => {
     const handleFocus = () => {
-      // Refetch results when page comes back into focus
+    
       setRefreshTrigger(prev => prev + 1);
     };
     
@@ -103,7 +103,6 @@ function CourseDetail() {
     const savedUser = localStorage.getItem("user");
     if (savedUser) setUser(JSON.parse(savedUser));
 
-    // Load completion status from localStorage
     const savedCompletedLessons = localStorage.getItem(`completedLessons_${id}`);
     if (savedCompletedLessons) {
       setCompletedLessons(new Set(JSON.parse(savedCompletedLessons)));
@@ -114,7 +113,6 @@ function CourseDetail() {
       setCompletedQuizzes(new Set(JSON.parse(savedCompletedQuizzes)));
     }
 
-    // Fetch course details
     const fetchCourse = async () => {
       try {
         const response = await API.get(`/course/${id}/`);
@@ -126,30 +124,24 @@ function CourseDetail() {
           price: response.data.price,
         });
         
-        // Set teacher from course data (includes teacher_details)
         if (response.data.teacher_details) {
           setTeacher(response.data.teacher_details);
         }
 
-        // Fetch lessons for this course
         const lessonsResponse = await API.get(`/lesson/?course=${id}`);
         setLessons(lessonsResponse.data);
 
-        // Fetch lesson categories for this course
         const categoriesResponse = await API.get(`/lesson-category/?course=${id}`);
         setLessonCategories(categoriesResponse.data);
 
-        // Fetch all quizzes and filter by lesson categories in this course
         const quizzesResponse = await API.get(`/quiz/`);
         
-        // Filter quizzes to only those belonging to categories in this course
         const categoryIds = categoriesResponse.data.map(cat => cat.id);
         const courseQuizzes = quizzesResponse.data.filter(quiz => 
           categoryIds.includes(quiz.lesson_category)
         );
         setQuizzes(courseQuizzes);
         
-        // Fetch quiz results for current user
         if (user && user.role === "student") {
           try {
             const resultsResponse = await API.get(`/result/`);
@@ -172,7 +164,6 @@ function CourseDetail() {
     fetchCourse();
   }, [id]);
 
-  // Check if student is enrolled
   useEffect(() => {
     if (user?.role === "student" && course) {
       const checkEnrollment = async () => {
@@ -189,7 +180,6 @@ function CourseDetail() {
     }
   }, [user, course]);
 
-  // Fetch quiz results when quizzes are loaded
   useEffect(() => {
     if (user?.role === "student" && quizzes.length > 0) {
       const fetchResults = async () => {
@@ -218,11 +208,10 @@ function CourseDetail() {
       return;
     }
 
-    // Show payment modal if course has a price
     if (course && course.price > 0) {
       setShowPaymentModal(true);
     } else {
-      // Free course - enroll directly
+ 
       await enrollCourse();
     }
   };
@@ -237,7 +226,7 @@ function CourseDetail() {
       setIsEnrolled(true);
       setError(null);
       setShowPaymentModal(false);
-      // Reset OTP and payment details
+    
       setOtpSent(false);
       setOtpCode("");
       setOtpVerified(false);
@@ -270,16 +259,12 @@ function CourseDetail() {
     setPaymentProcessing(true);
     try {
 
-      
-      // Create payment record
       const paymentResponse = await API.post("/payment/", {
         course: course.id,
         amount: parseFloat(course.price),
         payment_status: "completed",
       });
       
-      
-      // Then enroll the student
       await enrollCourse();
     } catch (error) {
       setError(
@@ -387,7 +372,7 @@ function CourseDetail() {
       };
 
       if (editingLessonId) {
-        // Update existing lesson
+       
         await API.patch(`/lesson/${editingLessonId}/`, payload);
         setLessons(
           lessons.map((lesson) =>
@@ -397,7 +382,7 @@ function CourseDetail() {
         setEditingLessonId(null);
         alert("Lesson updated successfully!");
       } else {
-        // Create new lesson
+     
         payload.course = parseInt(id);
         const response = await API.post("/lesson/", payload);
         setLessons([...lessons, response.data]);
@@ -424,7 +409,7 @@ function CourseDetail() {
       };
 
       if (editingCategoryId) {
-        // Update existing category
+      
         await API.patch(`/lesson-category/${editingCategoryId}/`, payload);
         setLessonCategories(
           lessonCategories.map((cat) =>
@@ -434,7 +419,7 @@ function CourseDetail() {
         setEditingCategoryId(null);
         alert("Category updated successfully!");
       } else {
-        // Create new category
+    
         payload.course = parseInt(id);
         const response = await API.post("/lesson-category/", payload);
         setLessonCategories([...lessonCategories, response.data]);
@@ -511,12 +496,10 @@ function CourseDetail() {
       await API.delete(`/lesson-category/${categoryId}/`);
       setLessonCategories(lessonCategories.filter((cat) => cat.id !== categoryId));
       
-      // Remove lessons that belong to this category
       const lessonsToRemove = lessons.filter((lesson) => lesson.category === categoryId);
       const updatedLessons = lessons.filter((lesson) => lesson.category !== categoryId);
       setLessons(updatedLessons);
       
-      // Remove completion status for lessons in this category
       const newCompleted = new Set(completedLessons);
       lessonsToRemove.forEach((lesson) => newCompleted.delete(lesson.id));
       setCompletedLessons(newCompleted);
@@ -576,7 +559,6 @@ function CourseDetail() {
       await API.delete(`/lesson/${lessonId}/`);
       setLessons(lessons.filter((lesson) => lesson.id !== lessonId));
       
-      // Remove completion status for this lesson
       const newCompleted = new Set(completedLessons);
       newCompleted.delete(lessonId);
       setCompletedLessons(newCompleted);
@@ -588,13 +570,12 @@ function CourseDetail() {
   };
 
   const handleToggleLessonCompletion = (lessonId) => {
-    // If not logged in, redirect to login
+  
     if (!user) {
       navigate("/login");
       return;
     }
 
-    // If student but not enrolled, show error
     if (user.role === "student" && !isEnrolled) {
       alert("You must be enrolled in this course to interact with lessons");
       return;
@@ -607,18 +588,17 @@ function CourseDetail() {
       newCompleted.add(lessonId);
     }
     setCompletedLessons(newCompleted);
-    // Save to localStorage
+  
     localStorage.setItem(`completedLessons_${id}`, JSON.stringify(Array.from(newCompleted)));
   };
 
   const handleToggleQuizCompletion = (quizId) => {
-    // If not logged in, redirect to login
+  
     if (!user) {
       navigate("/login");
       return;
     }
 
-    // If student but not enrolled, show error
     if (user.role === "student" && !isEnrolled) {
       alert("You must be enrolled in this course to complete quizzes");
       return;
@@ -631,20 +611,18 @@ function CourseDetail() {
       newCompleted.add(quizId);
     }
     setCompletedQuizzes(newCompleted);
-    // Save to localStorage
+  
     localStorage.setItem(`completedQuizzes_${id}`, JSON.stringify(Array.from(newCompleted)));
   };
 
   const handleWatchVideo = (e, videoUrl) => {
     e.preventDefault();
     
-    // If not logged in, redirect to login
     if (!user) {
       navigate("/login");
       return;
     }
 
-    // If student but not enrolled, prompt to enroll
     if (user.role === "student" && !isEnrolled) {
       const shouldEnroll = window.confirm(
         "You need to enroll in this course first to watch videos. Would you like to enroll now?"
@@ -655,7 +633,6 @@ function CourseDetail() {
       return;
     }
 
-    // If authorized, open video in new tab
     window.open(videoUrl, "_blank", "noopener,noreferrer");
   };
 
@@ -709,7 +686,6 @@ function CourseDetail() {
       return;
     }
 
-    // Validate total marks
     const totalQuestionMarks = quizQuestions.reduce((sum, q) => sum + q.marks, 0);
     if (totalQuestionMarks > parseInt(quizFormData.total_marks)) {
       alert(`Total question marks (${totalQuestionMarks}) cannot exceed quiz total marks (${quizFormData.total_marks})`);
@@ -738,7 +714,6 @@ function CourseDetail() {
         quizId = response.data.id;
       }
 
-      // Save questions and answers
       for (const question of quizQuestions) {
         try {
           const questionPayload = {
@@ -749,7 +724,6 @@ function CourseDetail() {
           const questionResponse = await API.post("/question/", questionPayload);
           const questionId = questionResponse.data.id;
 
-          // Save answers for this question
           for (const answer of question.answers) {
             const answerPayload = {
               question: questionId,
@@ -765,7 +739,6 @@ function CourseDetail() {
 
       alert("Quiz with questions added successfully!");
 
-      // Reset form
       setQuizFormData({
         title: "",
         description: "",
@@ -807,7 +780,6 @@ function CourseDetail() {
       await API.delete(`/quiz/${quizId}/`);
       setQuizzes(quizzes.filter(q => q.id !== quizId));
       
-      // Remove completion status for this quiz
       const newCompleted = new Set(completedQuizzes);
       newCompleted.delete(quizId);
       setCompletedQuizzes(newCompleted);
@@ -828,10 +800,9 @@ function CourseDetail() {
       return;
     }
     
-    // If marking as correct, unmark all others
     let newAnswers = currentAnswers.map(a => ({ ...a, is_correct: false }));
     newAnswers.push({
-      id: Date.now(), // Temporary ID for new answers
+      id: Date.now(), 
       text: currentAnswerText,
       is_correct: currentAnswerCorrect,
     });
@@ -904,7 +875,7 @@ function CourseDetail() {
       };
 
       if (editingFileId) {
-        // Update file
+        
         await API.patch(`/lesson-file/${editingFileId}/`, payload);
         
         setLessons(lessons.map(lesson => {
@@ -920,7 +891,7 @@ function CourseDetail() {
         setEditingFileId(null);
         alert("File updated successfully!");
       } else {
-        // Create new file
+       
         const response = await API.post("/lesson-file/", payload);
         
         setLessons(lessons.map(lesson => {
@@ -967,7 +938,6 @@ function CourseDetail() {
     try {
       await API.delete(`/lesson-file/${fileId}/`);
       
-      // Update the lesson's files
       setLessons(lessons.map(lesson => {
         if (lesson.id === lessonId) {
           return {
@@ -985,24 +955,21 @@ function CourseDetail() {
   };
 
   const handleLessonInteraction = (action) => {
-    // Teachers can always interact with their own courses
+    
     if (isTeacher) {
       return true;
     }
 
-    // Any interaction (checkbox, video) by logged-out user redirects to login
     if (!user) {
       navigate("/login");
       return;
     }
 
-    // Students not enrolled get enrollment prompt or alert
     if (user.role === "student" && !isEnrolled) {
       alert("You must be enrolled in this course to interact with lessons");
       return;
     }
 
-    // Allow action for authorized users
     return true;
   };
 
@@ -1164,7 +1131,6 @@ function CourseDetail() {
                         const totalQuizzes = quizzes.length;
                         const totalItems = totalLessons + totalQuizzes;
                         
-                        // Count actually completed items
                         let completedItems = 0;
                         lessons.forEach(lesson => {
                           if (completedLessons.has(lesson.id)) {
@@ -1440,7 +1406,7 @@ function CourseDetail() {
                       {lessonCategories
                         .filter((category) => {
                           const categoryLessons = getLessonsByCategory(category.id);
-                          // Teachers see all categories, students only see categories with lessons
+                          
                           return isTeacher || categoryLessons.length > 0;
                         })
                         .map((category) => {
@@ -2296,6 +2262,21 @@ function CourseDetail() {
                   Cancel
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {user?.role === "student" && (
+        <div className="feedback-section mt-5 py-5">
+          <div className="container">
+            <div className="feedback-card">
+              <div className="feedback-icon">
+                <i className="fas fa-comments"></i>
+              </div>
+              <h3>Course Feedback</h3>
+              <p>Share your learning experience and help us improve</p>
+              <span className="badge-coming-soon">Coming Soon</span>
             </div>
           </div>
         </div>
