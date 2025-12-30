@@ -1,4 +1,3 @@
-# PROJECT REPORT
 ## PARHAI WARHAI - Learning Management System
 
 ---
