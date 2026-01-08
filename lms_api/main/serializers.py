@@ -148,12 +148,13 @@ class RegisterSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(choices=[('student', 'Student'), ('teacher', 'Teacher')])
     qualification = serializers.CharField(required=True)
     mobile_no = serializers.CharField(required=True)
-    experience = serializers.IntegerField(required=False)
+    experience = serializers.IntegerField(required=False, min_value=0)
     interested_categories = serializers.CharField(required=False, allow_blank=True)
+    expertise = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'role', 'qualification', 'mobile_no', 'experience', 'interested_categories']
+        fields = ['username', 'email', 'password', 'role', 'qualification', 'mobile_no', 'experience', 'interested_categories', 'expertise']
 
     def create(self, validated_data):
         role = validated_data.pop('role')
@@ -175,7 +176,8 @@ class RegisterSerializer(serializers.ModelSerializer):
                 user=user,
                 qualification=validated_data.get('qualification', ''),
                 mobile_no=validated_data.get('mobile_no', ''),
-                experience=validated_data.get('experience', '')
+                experience=validated_data.get('experience', 0),
+                expertise=validated_data.get('expertise', '')
             )
 
         return user

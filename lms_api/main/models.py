@@ -1,11 +1,12 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     qualification = models.CharField(max_length=200)
     mobile_no = models.CharField(max_length=20) 
-    experience = models.IntegerField()
+    experience = models.IntegerField(validators=[MinValueValidator(0)])
     expertise = models.TextField()
     
     def __str__(self):

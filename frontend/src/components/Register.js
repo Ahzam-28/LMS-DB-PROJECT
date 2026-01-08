@@ -15,6 +15,7 @@ function Register() {
     mobile_no: "",
     experience: "",
     interested_categories: "",
+    expertise: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -62,9 +63,15 @@ function Register() {
       setError("Interested Categories is required for students");
       return false;
     }
-    if (formData.role === "teacher" && !formData.experience) {
-      setError("Experience is required for teachers");
-      return false;
+    if (formData.role === "teacher") {
+      if (formData.experience === "") {
+        setError("Experience is required for teachers");
+        return false;
+      }
+      if (formData.expertise === "") {
+        setError("Expertise is required for teachers");
+        return false;
+      }
     }
     return true;
   };
@@ -97,7 +104,8 @@ function Register() {
     if (formData.role === "student") {
       payload.interested_categories = formData.interested_categories;
     } else if (formData.role === "teacher") {
-      payload.experience = formData.experience;
+      payload.experience = parseInt(formData.experience, 10);
+      payload.expertise = formData.expertise;
     }
 
     try {
@@ -345,6 +353,24 @@ function Register() {
                         onChange={handleChange}
                         required
                         disabled={loading}
+                      />
+                    </div>
+                  </div>
+                )}
+                {formData.role === "teacher" && (
+                  <div className="form-group">
+                    <label htmlFor="expertise">Expertise</label>
+                    <div className="input-wrapper">
+                      <i className="fas fa-star input-icon"></i>
+                      <textarea
+                        id="expertise"
+                        name="expertise"
+                        placeholder="Describe your areas of expertise"
+                        value={formData.expertise}
+                        onChange={handleChange}
+                        required
+                        disabled={loading}
+                        rows={3}
                       />
                     </div>
                   </div>

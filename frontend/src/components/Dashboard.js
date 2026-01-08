@@ -94,23 +94,45 @@ function Dashboard({ user, setUser }) {
         payload.interested_categories = editFormData.interested_categories;
       } else {
         payload.experience = editFormData.experience;
+        payload.expertise = editFormData.expertise;
       }
 
       const endpoint = user.role === "student" ? `/student/${user.profile?.id}/` : `/teacher/${user.profile?.id}/`;
       const response = await API.patch(endpoint, payload);
 
-      // Update local user state
-      const updatedUser = {
-        ...user,
-        profile: response.data,
-      };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      // Refresh full user object from server to ensure consistent shape
+      try {
+        const meResp = await API.get("me/");
+        setUser(meResp.data);
+        localStorage.setItem("user", JSON.stringify(meResp.data));
+      } catch (err) {
+        // If fetching /me/ fails, fallback to partial update
+        const updatedUser = {
+          ...user,
+          profile: response.data,
+        };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
 
       setShowEditModal(false);
       alert("Profile updated successfully!");
     } catch (error) {
-      alert("Failed to update profile. Please try again.");
+      console.error("Profile update failed:", error);
+      let errorMessage = "Failed to update profile. Please try again.";
+      if (error.response?.data) {
+        // Try to show a useful message from the API
+        const data = error.response.data;
+        if (typeof data === 'string') errorMessage = data;
+        else if (data.detail) errorMessage = data.detail;
+        else {
+          // pick first error message found
+          const first = Object.values(data)[0];
+          if (Array.isArray(first)) errorMessage = first[0];
+          else if (typeof first === 'string') errorMessage = first;
+        }
+      }
+      alert(errorMessage);
     } finally {
       setEditLoading(false);
     }
@@ -348,7 +370,7 @@ function Dashboard({ user, setUser }) {
                           </div>
                           <div className="info-content">
                             <p className="info-label">Experience</p>
-                            <p className="info-value">{user.profile?.experience || "N/A"} years</p>
+                              <p className="info-value">{(user.profile?.experience ?? null) !== null ? `${user.profile.experience} years` : "N/A"}</p>
                           </div>
                         </div>
 
