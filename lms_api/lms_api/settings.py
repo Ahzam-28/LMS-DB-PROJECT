@@ -9,7 +9,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
-    'main',
+    'main.apps.MainConfig',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',

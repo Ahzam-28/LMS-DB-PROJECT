@@ -413,14 +413,14 @@ function Dashboard({ user, setUser }) {
               {user.role === "teacher" && (
                 <div className="mb-4">
                   <button
-                    className="btn btn-primary mb-3"
+                    className="btn logout-btn mb-3"
                     onClick={() => setShowCreateForm(!showCreateForm)}
                   >
                     {showCreateForm ? "Cancel" : "+ Add New Course"}
                   </button>
 
                   {showCreateForm && (
-                    <div className="card mb-4">
+                    <div className="card mb-4 create-course-card">
                       <div className="card-body">
                         <h5 className="card-title">Create New Course</h5>
                         <form onSubmit={handleCreateCourse}>
@@ -630,7 +630,7 @@ function Dashboard({ user, setUser }) {
                           </div>
                           <div className="enrollment-badge">
                             <span className="badge bg-info">
-                              ðŸ‘¥ {course.enrollment_count} {course.enrollment_count === 1 ? "Student" : "Students"}
+                              <i className="fas fa-users me-1" aria-hidden="true"></i> {course.enrollment_count} {course.enrollment_count === 1 ? "Student" : "Students"}
                             </span>
                           </div>
                           <h5 className="course-title">{course.title}</h5>

@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import API from "./api";
 import Navbar from "./components/Navbar";
 import HomePage from "./components/homepage_new";
 import Login from "./components/Login";
@@ -29,8 +30,31 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) setUser(JSON.parse(savedUser));
+    const init = async () => {
+      const token = localStorage.getItem("token");
+      const savedUser = localStorage.getItem("user");
+
+      if (!token) {
+        // No token -> clear any stale user
+        if (savedUser) localStorage.removeItem("user");
+        setUser(null);
+        return;
+      }
+
+      try {
+        const resp = await API.get("me/");
+        // API returns current user info when token is valid
+        setUser(resp.data);
+        localStorage.setItem("user", JSON.stringify(resp.data));
+      } catch (err) {
+        // token invalid/expired -> clear local storage and state
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setUser(null);
+      }
+    };
+
+    init();
   }, []);
 
   return (

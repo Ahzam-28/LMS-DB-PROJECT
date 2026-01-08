@@ -796,6 +796,54 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CurrentUserView(APIView):
+    """Return current authenticated user's basic info.
+
+    This endpoint allows the frontend to validate a stored token on app load.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        token = None
+        try:
+            token = Token.objects.filter(user=user).first()
+        except Exception:
+            token = None
+
+        if hasattr(user, 'student'):
+            role = 'student'
+            profile = user.student
+            profile_data = {
+                "id": profile.id,
+                "qualification": profile.qualification,
+                "mobile_no": profile.mobile_no,
+                "interested_categories": profile.interested_categories
+            }
+        elif hasattr(user, 'teacher'):
+            role = 'teacher'
+            profile = user.teacher
+            profile_data = {
+                "id": profile.id,
+                "qualification": profile.qualification,
+                "mobile_no": profile.mobile_no,
+                "experience": profile.experience,
+                "expertise": profile.expertise
+            }
+        else:
+            role = 'unknown'
+            profile_data = {}
+
+        return Response({
+            "user_id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "role": role,
+            "profile": profile_data,
+            "token": token.key if token else None,
+        }, status=status.HTTP_200_OK)
+
+
 class OTPViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     

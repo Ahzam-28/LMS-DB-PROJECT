@@ -541,6 +541,20 @@
   box-shadow: 0 0 10px rgba(240, 240, 255, 0.2);
 }
 
+/* Create New Course card: match dashboard's black/red gradient theme */
+.create-course-card {
+  background: linear-gradient(135deg, #000000 0%, #110000 46%, #2D0000 100%);
+  border: 2px solid #2D0000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 50, 50, 0.12);
+}
+
+.create-course-card .card-body {
+  padding: 2rem;
+  color: #f0f0ff;
+}
+
 .modal {
   position: fixed;
   top: 0;

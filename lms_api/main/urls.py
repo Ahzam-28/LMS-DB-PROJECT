@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter 
-from .views import TeacherViewSet, StudentViewSet , CourseViewSet , CourseCategoryViewSet , EnrollmentViewSet , LessonViewSet , LessonCategoryViewSet , LessonFileViewSet , AssignmentViewSet , SubmissionViewSet , QuizViewSet , QuestionViewSet , AnswerViewSet , ResultViewSet , PaymentViewSet , FeedbackViewSet , ResourceViewSet , FileSubmissionViewSet , RegisterView, LoginView, OTPViewSet
+from .views import TeacherViewSet, StudentViewSet , CourseViewSet , CourseCategoryViewSet , EnrollmentViewSet , LessonViewSet , LessonCategoryViewSet , LessonFileViewSet , AssignmentViewSet , SubmissionViewSet , QuizViewSet , QuestionViewSet , AnswerViewSet , ResultViewSet , PaymentViewSet , FeedbackViewSet , ResourceViewSet , FileSubmissionViewSet , RegisterView, LoginView, OTPViewSet, CurrentUserView
 from .views import FileUploadView
 
 router = DefaultRouter()
@@ -29,4 +29,5 @@ urlpatterns = [
     path('upload/', FileUploadView.as_view(), name='file-upload'),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
+    path('me/', CurrentUserView.as_view(), name='me'),
 ]
