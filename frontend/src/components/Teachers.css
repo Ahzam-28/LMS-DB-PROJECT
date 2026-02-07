@@ -1,0 +1,160 @@
+/* Teachers List Page */
+.teachers-page {
+  background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+/* Light theme support for Teachers page */
+.light-theme .teachers-page {
+  background: linear-gradient(180deg, #FBF7F0 0%, #f5f5f5 100%);
+}
+
+.light-theme .teacher-card-large {
+  background: #FFFFFF;
+  border: 1px solid rgba(43, 108, 176, 0.15);
+}
+
+.teachers-header {
+  background: linear-gradient(135deg, #2b6cb0 0%, #1e4d85 100%);
+  color: white;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.teachers-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.teachers-header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.teachers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.teacher-card-large {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(43, 108, 176, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.teacher-card-large:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(43, 108, 176, 0.15);
+}
+
+.teacher-card-header {
+  background: linear-gradient(135deg, #f5f5f5 0%, #efefef 100%);
+  padding: 2rem;
+  text-align: center;
+}
+
+.teacher-avatar-large {
+  font-size: 4rem;
+  color: #2b6cb0;
+}
+
+.teacher-card-body {
+  padding: 1.5rem;
+}
+
+.teacher-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 0.5rem;
+}
+
+.teacher-expertise {
+  color: #6f42c1;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.teacher-experience {
+  color: #2b6cb0;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.teacher-bio {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  min-height: 2.8rem;
+}
+
+.teacher-card-large .btn {
+  width: 100%;
+  background: linear-gradient(135deg, #2b6cb0, #1e4d85) !important;
+  color: white;
+  border: none;
+}
+
+.teacher-card-large .btn:hover {
+  background: linear-gradient(135deg, #1e4d85, #05376b) !important;
+}
+
+.loading-message,
+.error-message,
+.no-data-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.error-message {
+  color: #d32f2f;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .teachers-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .teachers-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .teachers-header p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .teachers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .teachers-header {
+    padding: 2rem 1rem;
+  }
+
+  .teachers-header h1 {
+    font-size: 1.5rem;
+  }
+}

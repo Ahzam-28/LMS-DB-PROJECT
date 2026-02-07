@@ -1,0 +1,1275 @@
+/* Light theme - Complete override */
+
+/*** ABSOLUTE NUCLEAR OVERRIDE FOR ALL DARK BACKGROUNDS ***/
+
+/* ANY element with dark linear-gradient backgrounds - DESTROY IT */
+.light-theme [style*="linear-gradient"],
+.light-theme [style*="0a0a0a"],
+.light-theme [style*="0f0f0f"],
+.light-theme [style*="1a1a1a"],
+.light-theme .lesson-category-section {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+/* ALL CARDS AND SECTIONS - TOTAL OVERRIDE */
+.light-theme .card,
+.light-theme .custom-card,
+.light-theme .course-detail .card,
+.light-theme .course-detail-col-sidebar .custom-card {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+/* ALL CARD BODIES */
+.light-theme .card-body,
+.light-theme .custom-card-body,
+.light-theme .course-detail .card-body,
+.light-theme .course-detail-col-sidebar .custom-card-body {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  color: #333 !important;
+}
+
+/* ALL ELEMENTS WITH BLACK/DARK BACKGROUNDS - CONSOLIDATED OPTIMIZED SELECTORS */
+.light-theme [style*="background: #0"],
+.light-theme [style*="background-color: #0"],
+.light-theme [style*="linear-gradient(135deg, #0"] {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+/* ULTRA-AGGRESSIVE COURSE DETAIL BACKGROUND FIX */
+html.light-theme .course-detail-container,
+html.light-theme .course-detail,
+html.light-theme .course-detail-container.course-detail,
+.light-theme .course-detail-container,
+.light-theme .course-detail,
+.light-theme .course-detail-container.course-detail,
+body.light-theme .course-detail-container,
+body.light-theme .course-detail,
+body.light-theme .course-detail-container.course-detail {
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+  background: #FBF7F0 !important;
+  color: #000 !important;
+}
+
+html.light-theme .course-detail-container::before,
+html.light-theme .course-detail-container::after,
+html.light-theme .course-detail::before,
+html.light-theme .course-detail::after,
+.light-theme .course-detail-container::before,
+.light-theme .course-detail-container::after,
+.light-theme .course-detail::before,
+.light-theme .course-detail::after {
+  background-color: transparent !important;
+  background-image: none !important;
+  background: transparent !important;
+  display: none !important;
+}
+
+:root.light-theme {
+  --nav-text: #2b6cb0 !important;
+  --nav-accent: #2b6cb0 !important;
+}
+
+.light-theme {
+  --nav-text: #2b6cb0 !important;
+  --nav-accent: #2b6cb0 !important;
+}
+
+/* Override navbar nav container */
+.light-theme .navbar-nav {
+  --nav-text: #2b6cb0 !important;
+}
+
+/* EXPLICIT OVERRIDES FOR DARK-BACKGROUND ELEMENTS - PLACE BEFORE * RULE */
+.light-theme .custom-card,
+.light-theme .custom-card-body,
+.light-theme .card,
+.light-theme .card-body,
+.light-theme .form-control,
+.light-theme .form-select,
+.light-theme .form-check,
+.light-theme .modal-content {
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  background: #FFFFFF !important;
+  color: #333 !important;
+}
+
+.light-theme .custom-card [ style*="linear-gradient"],
+.light-theme div[style*="0f0f0f"],
+.light-theme div[style*="0a0a0a"],
+.light-theme div[style*="1a1a1a"] {
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+  background: #FBF7F0 !important;
+}
+
+/* FORCE ALL BACKGROUNDS TO CREAM */
+.light-theme,
+.light-theme body,
+.light-theme html,
+body.light-theme,
+html.light-theme,
+.light-theme * {
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+/* Text color throughout */
+.light-theme {
+  color: #000 !important;
+}
+
+/* Override specific white backgrounds */
+.light-theme .bg-white,
+.light-theme .bg-light,
+.light-theme [style*="background: white"],
+.light-theme [style*="background-color: white"],
+.light-theme [style*="background: #fff"],
+.light-theme [style*="background-color: #fff"],
+.light-theme [style*="background: #ffffff"],
+.light-theme [style*="background-color: #ffffff"] {
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+/* Navbar */
+.light-theme .navbar {
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+.light-theme .navbar-brand,
+.light-theme .navbar-brand strong {
+  color: #2b6cb0 !important;
+}
+
+/* Force all nav-link text to blue - all states */
+.light-theme .nav-link,
+.light-theme .nav-link:link,
+.light-theme .nav-link:visited,
+.light-theme .nav-link:active,
+.light-theme .nav-link:focus,
+.light-theme a.nav-link,
+.light-theme a.nav-link:link,
+.light-theme a.nav-link:visited,
+.light-theme a.nav-link:active,
+.light-theme a.nav-link:focus,
+.light-theme .nav-item .nav-link {
+  color: #2b6cb0 !important;
+  background-color: transparent !important;
+}
+
+.light-theme .nav-link:hover,
+.light-theme a.nav-link:hover,
+.light-theme .nav-item .nav-link:hover {
+  color: #05376b !important;
+  background: rgba(43,108,176,0.1) !important;
+}
+
+/* Hero and content sections */
+.light-theme .hero,
+.light-theme .hero-section,
+.light-theme .homepage-hero,
+.light-theme .hero-content {
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+.light-theme .hero h1,
+.light-theme .hero p,
+.light-theme .hero-section h1,
+.light-theme .hero-section p {
+  background-color: #FBF7F0 !important;
+  color: #000 !important;
+}
+
+/* ALL Cards - cream background */
+.light-theme .card,
+.light-theme .auth-card,
+.light-theme .register-card,
+.light-theme .login-card,
+.light-theme .profile-card,
+.light-theme .course-card,
+.light-theme .stat-card,
+.light-theme .modal-content,
+.light-theme .auth-side {
+  background-color: #FBF7F0 !important;
+  border: 1px solid rgba(43,108,176,0.15) !important;
+}
+
+/* Headings */
+.light-theme h1,
+.light-theme h2,
+.light-theme h3,
+.light-theme h4,
+.light-theme h5,
+.light-theme h6,
+.light-theme .course-card .course-title,
+.light-theme .profile-name,
+.light-theme .section-title {
+  color: #000 !important;
+  background-color: #FBF7F0 !important;
+}
+
+/* All inputs - cream background */
+.light-theme input[type="text"],
+.light-theme input[type="email"],
+.light-theme input[type="password"],
+.light-theme input[type="number"],
+.light-theme input[type="date"],
+.light-theme input[type="tel"],
+.light-theme input,
+.light-theme textarea,
+.light-theme select,
+.light-theme .form-control,
+.light-theme .input-field,
+.light-theme .input-select {
+  background-color: #FBF7F0 !important;
+  color: #000 !important;
+  border: 1px solid rgba(43,108,176,0.15) !important;
+}
+
+.light-theme input::placeholder,
+.light-theme textarea::placeholder,
+.light-theme select::placeholder,
+.light-theme .input-field::placeholder {
+  color: rgba(0,0,0,0.5) !important;
+}
+
+.light-theme input:focus,
+.light-theme textarea:focus,
+.light-theme select:focus,
+.light-theme .input-field:focus,
+.light-theme .input-select:focus {
+  background-color: #FBF7F0 !important;
+  border-color: rgba(43,108,176,0.3) !important;
+  box-shadow: 0 0 0 3px rgba(43,108,176,0.1) !important;
+}
+
+/* LESSON FORM INPUTS - SPECIFIC FIXES */
+.light-theme .input-label {
+  color: #000 !important;
+  background-color: transparent !important;
+}
+
+.light-theme .input-field {
+  background-color: #FBF7F0 !important;
+  color: #000 !important;
+  border: 1px solid rgba(43,108,176,0.2) !important;
+  border-radius: 8px !important;
+}
+
+.light-theme .input-select {
+  background-color: #FBF7F0 !important;
+  color: #000 !important;
+  border: 1px solid rgba(43,108,176,0.2) !important;
+  border-radius: 8px !important;
+}
+
+/* Buttons - ALL BLUE */
+.light-theme .btn,
+.light-theme .btn-primary,
+.light-theme .btn-submit,
+.light-theme .btn-secondary,
+.light-theme .btn-success,
+.light-theme .btn-danger,
+.light-theme .btn-warning,
+.light-theme .btn-info,
+.light-theme button,
+.light-theme button[type="submit"],
+.light-theme button[type="button"],
+.light-theme input[type="submit"],
+.light-theme input[type="button"],
+.light-theme .section-header .btn,
+.light-theme .section-header .btn.btn-primary,
+.light-theme .teachers-section .section-header .btn.btn-primary {
+  background: linear-gradient(135deg, #2b6cb0, #1e4d85) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 6px 18px rgba(43, 108, 176, 0.2) !important;
+}
+
+.light-theme .btn:hover,
+.light-theme .btn-primary:hover,
+.light-theme .btn-submit:hover,
+.light-theme .btn-secondary:hover,
+.light-theme .btn-success:hover,
+.light-theme .btn-danger:hover,
+.light-theme .btn-warning:hover,
+.light-theme .btn-info:hover,
+.light-theme button:hover,
+.light-theme button[type="submit"]:hover,
+.light-theme button[type="button"]:hover,
+.light-theme input[type="submit"]:hover,
+.light-theme input[type="button"]:hover,
+.light-theme .section-header .btn:hover,
+.light-theme .section-header .btn.btn-primary:hover,
+.light-theme .teachers-section .section-header .btn.btn-primary:hover {
+  background: linear-gradient(135deg, #1e4d85, #05376b) !important;
+  color: #fff !important;
+}
+
+.light-theme .logout-btn,
+.light-theme .nav-link.btn-link.logout-btn,
+.light-theme .create-course-btn {
+  background: linear-gradient(135deg, #2b6cb0, #1e4d85) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.light-theme .logout-btn:hover,
+.light-theme .nav-link.btn-link.logout-btn:hover,
+.light-theme .create-course-btn:hover {
+  background: linear-gradient(135deg, #1e4d85, #05376b) !important;
+}
+
+/* Icons - ALL BLUE */
+.light-theme i,
+.light-theme .fas,
+.light-theme .far,
+.light-theme .fab,
+.light-theme [class*="fa-"],
+.light-theme .icon,
+.light-theme .navbar-brand-icon,
+.light-theme .input-icon,
+.light-theme button i,
+.light-theme a i,
+.light-theme span i,
+.light-theme .badge i,
+.light-theme .course-card i,
+.light-theme .profile-card i {
+  color: #2b6cb0 !important;
+}
+
+.light-theme button i:hover,
+.light-theme a i:hover {
+  color: #05376b !important;
+}
+
+/* Badges */
+.light-theme .badge,
+.light-theme .course-badge,
+.light-theme .enrollment-badge,
+.light-theme .enrollment-badge .badge {
+  background-color: #2b6cb0 !important;
+  color: #fff !important;
+}
+
+/* Container sections */
+.light-theme .container,
+.light-theme .container-fluid,
+.light-theme .auth-container,
+.light-theme .dashboard-container,
+.light-theme .page-container,
+.light-theme .main-content {
+  background-color: #FBF7F0 !important;
+}
+
+/* Footer */
+.light-theme .footer,
+.light-theme footer {
+  background-color: #FBF7F0 !important;
+  color: #000 !important;
+  border-top: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+/* Modal and overlay backgrounds */
+.light-theme .modal {
+  background-color: rgba(251, 247, 240, 0.95) !important;
+}
+
+.light-theme .modal-backdrop {
+  background-color: rgba(0,0,0,0.3) !important;
+}
+
+.light-theme .modal-content {
+  background-color: #FBF7F0 !important;
+}
+
+/* Text styling - but NOT icons */
+.light-theme p,
+.light-theme span:not([class*="fa"]),
+.light-theme li,
+.light-theme label,
+.light-theme a:not(.btn):not(.nav-link) {
+  color: #000 !important;
+}
+
+.light-theme a:not(.btn):not(.nav-link) {
+  color: #2b6cb0 !important;
+}
+
+/* Course cards specific */
+.light-theme .course-card {
+  background-color: #FBF7F0 !important;
+}
+
+.light-theme .course-info,
+.light-theme .course-description,
+.light-theme .course-category {
+  background-color: #FBF7F0 !important;
+  color: #000 !important;
+}
+
+/* Icons - ensure blue */
+.light-theme i {
+  color: #2b6cb0 !important;
+}
+
+/* Override light blue text to PURPLE */
+.light-theme [style*="color: #2b6cb0"],
+.light-theme [style*="color:#2b6cb0"],
+.light-theme [style*="color: rgb(43, 108, 176)"],
+.light-theme [style*="color:rgb(43, 108, 176)"],
+.light-theme [style*="color: lightblue"],
+.light-theme [style*="color: #add8e6"],
+.light-theme [style*="color: #87ceeb"],
+.light-theme [style*="color: #b0e0e6"] {
+  color: #6f42c1 !important;
+}
+
+/* Override white text to PURPLE */
+.light-theme [style*="color: #fff"],
+.light-theme [style*="color:#fff"],
+.light-theme [style*="color: #ffffff"],
+.light-theme [style*="color:#ffffff"],
+.light-theme [style*="color: white"],
+.light-theme [style*="color:white"],
+.light-theme [style*="color: rgb(255, 255, 255)"],
+.light-theme [style*="color:rgb(255, 255, 255)"] {
+  color: #6f42c1 !important;
+}
+
+/* Light blue text elements to PURPLE */
+.light-theme .text-light-blue,
+.light-theme .light-blue-text,
+.light-theme .light-text {
+  color: #6f42c1 !important;
+}
+
+/* White text elements to PURPLE */
+.light-theme .text-white,
+.light-theme .white-text,
+.light-theme .text-light {
+  color: #6f42c1 !important;
+}
+
+/* Links that are light blue to PURPLE */
+.light-theme a[style*="color"] {
+  color: #6f42c1 !important;
+}
+
+/* Theme toggle button */
+.theme-toggle-btn {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  color: #2b6cb0 !important;
+  font-size: 1rem !important;
+  padding: 6px 10px !important;
+}
+
+/* COMPREHENSIVE TEXT COLOR FIXES - Light blue/White to PURPLE ONLY */
+.light-theme .text-info,
+.light-theme .text-light-blue,
+.light-theme .text-white,
+.light-theme .text-light,
+.light-theme .text-muted,
+.light-theme .text-body-secondary,
+.light-theme [class*="light-blue"],
+.light-theme [class*="white-text"],
+.light-theme .info-value,
+.light-theme .stats-value,
+.light-theme .course-duration,
+.light-theme .badge-info,
+.light-theme .badge-light {
+  color: #6f42c1 !important;
+}
+
+/* Light blue backgrounds to light purple background */
+.light-theme .bg-info,
+.light-theme .bg-light-blue,
+.light-theme .bg-light {
+  background: rgba(111, 66, 193, 0.1) !important;
+}
+
+/* COURSE CARDS - Price and details */
+.light-theme .course-card-footer .price {
+  color: #6f42c1 !important;
+  text-shadow: 0 0 8px rgba(111, 66, 193, 0.3) !important;
+}
+
+.light-theme .course-card-title,
+.light-theme .course-title {
+  color: #000 !important;
+}
+
+.light-theme .course-card-description {
+  color: #333 !important;
+}
+
+/* COURSE CARD CATEGORY - white/light blue to PURPLE */
+.light-theme .course-card-category,
+.light-theme .course-card-category small,
+.light-theme .course-category,
+.light-theme .course-category small {
+  color: #6f42c1 !important;
+}
+
+/* DASHBOARD COURSE CARD - All white/light text to purple/black */
+.light-theme .course-description {
+  color: #333 !important;
+}
+
+.light-theme .course-info {
+  background: rgba(111, 66, 193, 0.05) !important;
+  border-left: 4px solid rgba(111, 66, 193, 0.3) !important;
+}
+
+.light-theme .course-info p,
+.light-theme .course-info small {
+  color: #333 !important;
+}
+
+.light-theme .course-info .badge {
+  background: rgba(111, 66, 193, 0.15) !important;
+  color: #6f42c1 !important;
+  border: 1px solid rgba(111, 66, 193, 0.25) !important;
+}
+
+/* ENROLLMENT COUNTS - Make background purple, text white */
+.light-theme .enrollment-count {
+  background: #6f42c1 !important;
+  color: #fff !important;
+}
+
+/* ENROLLMENT BADGE - light blue to purple */
+.light-theme .enrollment-badge .badge {
+  background: rgba(111, 66, 193, 0.15) !important;
+  color: #6f42c1 !important;
+  border: 1px solid rgba(111, 66, 193, 0.25) !important;
+  box-shadow: 0 0 10px rgba(111, 66, 193, 0.15) !important;
+}
+
+/* ENROLLMENT BADGES */
+.light-theme .enrollment-badge-small {
+  color: #6f42c1 !important;
+}
+
+/* SECTION TITLES - Make black */
+.light-theme .section-title,
+.light-theme h1.section-title,
+.light-theme h2.section-title {
+  color: #000 !important;
+  text-shadow: none !important;
+}
+
+/* TEACHER CARD - Name, subheadings, qualifications */
+.light-theme .teacher-name,
+.light-theme .teacher-qualification,
+.light-theme .teacher-info strong {
+  color: #6f42c1 !important;
+}
+
+.light-theme .teacher-info {
+  color: #333 !important;
+  background: rgba(111, 66, 193, 0.05) !important;
+  border: 1px solid rgba(111, 66, 193, 0.15) !important;
+}
+
+.light-theme .teacher-card-title,
+.light-theme .teacher-info {
+  color: #000 !important;
+}
+
+/* TEACHER CARD TEXT - light blue/white to black or purple */
+.light-theme .teacher-card-title,
+.light-theme .teacher-info p {
+  color: #333 !important;
+}
+
+/* Light blue text (#f0f0ff) anywhere to black */
+.light-theme [style*="color: #f0f0ff"],
+.light-theme [style*="color:#f0f0ff"] {
+  color: #000 !important;
+}
+
+/* White text in cards to purple */
+.light-theme .course-item-footer .price,
+.light-theme .card-text[style*="color: #fff"],
+.light-theme .card-text[style*="color:#fff"],
+.light-theme .card-stats,
+.light-theme .stats-number {
+  color: #6f42c1 !important;
+}
+
+/* Course card header details */
+.light-theme .course-code {
+  background: rgba(111, 66, 193, 0.15) !important;
+  color: #6f42c1 !important;
+}
+
+/* Any remaining light text in course/teacher cards */
+.light-theme .card-info,
+.light-theme .course-info .badge,
+.light-theme .teacher-badge {
+  color: #6f42c1 !important;
+}
+
+/* DASHBOARD STATS - Make numbers bold and blue */
+.light-theme .stat-card {
+  background: linear-gradient(135deg, #f5f5f5 0%, #efefef 100%) !important;
+  border: 1px solid rgba(43, 108, 176, 0.2) !important;
+  color: #333 !important;
+}
+
+.light-theme .stat-value {
+  font-size: 3.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.75rem !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #2b6cb0 !important;
+  color: #2b6cb0 !important;
+}
+
+.light-theme .stat-label {
+  color: #333 !important;
+  font-weight: 600 !important;
+}
+
+/* COURSES PAGE STATS - Make numbers bold and blue */
+.light-theme .stats-card {
+  background: linear-gradient(135deg, #f5f5f5 0%, #efefef 100%) !important;
+  border: 1px solid rgba(43, 108, 176, 0.2) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-theme .stats-card h5 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #2b6cb0 !important;
+  color: #2b6cb0 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.light-theme .stats-card p {
+  color: #333 !important;
+  margin: 0 !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+}
+
+/* COURSE ENROLLMENT PAGE - Main container and background */
+.light-theme .course-enrollment {
+  background: #FBF7F0 !important;
+  min-height: 100vh !important;
+  padding-bottom: 50px !important;
+}
+
+.light-theme .course-enrollment::before {
+  background: transparent !important;
+}
+
+/* COURSE ENROLLMENT PAGE - Header and Filter sections */
+.light-theme .enrollment-header {
+  background: #FBF7F0 !important;
+  border: 1px solid rgba(43, 108, 176, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-theme .enrollment-header h1 {
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #000 !important;
+  color: #000 !important;
+  margin-bottom: 0.5rem !important;
+  letter-spacing: -0.5px !important;
+}
+
+.light-theme .enrollment-header .text-muted {
+  color: #666 !important;
+  font-size: 1.1rem !important;
+  opacity: 0.95 !important;
+}
+
+.light-theme .filter-section {
+  background: #FBF7F0 !important;
+  border: 1px solid rgba(43, 108, 176, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+  margin-bottom: 2rem !important;
+}
+
+/* COURSE DETAIL PAGE - All backgrounds and styling */
+.light-theme .course-detail-container {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+  padding: 2rem 1rem !important;
+}
+
+.light-theme .course-detail-container.course-detail {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+  padding-bottom: 50px !important;
+  min-height: 100vh !important;
+}
+
+html.light-theme .course-detail {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+  padding-bottom: 50px !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* Aggressive override for all pseudo-elements and decorative elements */
+.light-theme .course-detail::before,
+.light-theme .course-detail::after,
+.light-theme .course-detail-container::before,
+.light-theme .course-detail-container::after {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  display: none !important;
+  content: "" !important;
+  visibility: hidden !important;
+}
+
+/* COURSE DETAIL INTERNAL SECTIONS - ALL BLACK CARDS TO WHITE/CREAM */
+.light-theme .custom-card {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  border: 1px solid rgba(43, 108, 176, 0.15) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 12px !important;
+  margin-bottom: 2rem !important;
+}
+
+.light-theme .custom-card-body {
+  padding: 1.5rem !important;
+  color: #333 !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+.light-theme .custom-card-body h5 {
+  font-size: 1.2rem !important;
+  color: #000 !important;
+  margin-bottom: 1rem !important;
+}
+
+.light-theme .custom-card-body p {
+  color: #333 !important;
+}
+
+.light-theme .custom-card-body strong {
+  color: #000 !important;
+}
+
+.light-theme .custom-card-header {
+  padding: 1.5rem 2rem !important;
+  background: rgba(43, 108, 176, 0.08) !important;
+  border-bottom: 1px solid rgba(43, 108, 176, 0.15) !important;
+}
+
+.light-theme .custom-card::before,
+.light-theme .custom-card::after,
+.light-theme .custom-card-body::before,
+.light-theme .custom-card-body::after {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  display: none !important;
+}
+
+/* COURSE DETAIL PAGE - Cards and containers - MAXIMUM SPECIFICITY TO BEAT COURSEDETAIL.CSS */
+html.light-theme .course-detail .custom-card,
+html.light-theme .course-detail .card,
+.light-theme .course-detail .custom-card,
+.light-theme .course-detail .card,
+.light-theme .course-detail-col-sidebar .custom-card {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  border: 1px solid rgba(43, 108, 176, 0.15) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+  color: #333 !important;
+}
+
+html.light-theme .course-detail .card-body,
+.light-theme .course-detail .card-body,
+html.light-theme .course-detail .custom-card-body,
+.light-theme .course-detail .custom-card-body,
+.light-theme .course-detail-col-sidebar .custom-card-body {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  color: #333 !important;
+  padding: 1.5rem !important;
+  font-size: 1.1rem !important;
+}
+
+html.light-theme .course-detail-col-sidebar .custom-card-body,
+.light-theme .course-detail-col-sidebar .custom-card-body {
+  padding: 1.5rem !important;
+  color: #333 !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+html.light-theme .course-detail-col-sidebar .custom-card-body h5,
+.light-theme .course-detail-col-sidebar .custom-card-body h5,
+html.light-theme .course-detail .custom-card-body h5,
+.light-theme .course-detail .custom-card-body h5 {
+  color: #000 !important;
+  margin-bottom: 1rem !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+}
+
+html.light-theme .course-detail-col-sidebar .custom-card-body p,
+.light-theme .course-detail-col-sidebar .custom-card-body p,
+html.light-theme .course-detail .custom-card-body p,
+.light-theme .course-detail .custom-card-body p {
+  color: #333 !important;
+  margin: 0 !important;
+}
+
+html.light-theme .course-detail-col-sidebar .custom-card-body strong,
+.light-theme .course-detail-col-sidebar .custom-card-body strong,
+html.light-theme .course-detail .custom-card-body strong,
+.light-theme .course-detail .custom-card-body strong {
+  color: #000 !important;
+  font-weight: 700 !important;
+}
+
+html.light-theme .course-detail .custom-card-header,
+.light-theme .course-detail .custom-card-header {
+  background: rgba(43, 108, 176, 0.08) !important;
+  border-bottom: 1px solid rgba(43, 108, 176, 0.15) !important;
+  padding: 1.5rem 2rem !important;
+}
+
+html.light-theme .course-detail h1,
+.light-theme .course-detail h1 {
+  color: #000 !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  font-size: 2.5rem !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #000 !important;
+}
+
+html.light-theme .course-detail h5,
+.light-theme .course-detail h5 {
+  color: #000 !important;
+  font-weight: 700 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+  font-size: 1.5rem !important;
+}
+
+/* COURSE FEEDBACK SECTION - CHANGE BLACK TO CREAM TO MATCH PAGE */
+.light-theme .feedback-section,
+.light-theme div.feedback-section,
+html.light-theme .feedback-section,
+html.light-theme div.feedback-section {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+/* CATCH ANY BLACK/DARK DIVS INSIDE OR NEAR FEEDBACK SECTION */
+.light-theme .feedback-section ~ div,
+.light-theme .feedback-section + div,
+.light-theme div[style*="rgba(0,0,0"],
+.light-theme div[style*="rgb(0"],
+.light-theme div[style*="#0a0a0a"],
+.light-theme div[style*="#0f0f0f"],
+.light-theme div[style*="#1a1a1a"],
+.light-theme div[style*="linear-gradient(135deg, #0"] {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+/* OVERRIDE INLINE STYLE BLACK */
+.light-theme [style*="background: rgb(0,"] {
+  background: #FBF7F0 !important !important;
+  background-color: #FBF7F0 !important !important;
+}
+
+/* FORCE ENTIRE COURSE DETAIL AREA TO CREAM */
+.light-theme .course-detail-container,
+.light-theme .course-detail,
+html.light-theme .course-detail-container,
+html.light-theme .course-detail {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+/* LESSON FORM - FORCEFULLY OVERRIDE ALL BLACK BACKGROUNDS */
+.light-theme .course-detail form,
+.light-theme .lesson-form,
+.light-theme .lesson-form-container {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+.light-theme .course-detail form .input-field,
+.light-theme .course-detail form .input-select,
+.light-theme .course-detail form textarea,
+.light-theme .course-detail form input {
+  background-color: #FBF7F0 !important;
+  color: #000 !important;
+  border: 1px solid rgba(43,108,176,0.2) !important;
+}
+
+.light-theme .course-detail form .input-label,
+.light-theme .course-detail form label {
+  color: #000 !important;
+  background-color: transparent !important;
+}
+
+/* LESSONS SECTION - FORCEFULLY OVERRIDE ALL BLACK BACKGROUNDS */
+.light-theme .lessons-section,
+.light-theme .lesson-category-section,
+.light-theme .lesson-category-header,
+.light-theme .lesson-category-content,
+html.light-theme .lessons-section,
+html.light-theme .lesson-category-section,
+html.light-theme .lesson-category-header,
+html.light-theme .lesson-category-content {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+.light-theme .lessons-section h5,
+.light-theme .lessons-section h6,
+html.light-theme .lessons-section h5,
+html.light-theme .lessons-section h6 {
+  color: #000 !important;
+  background-color: transparent !important;
+}
+
+.light-theme .lesson-category-section,
+html.light-theme .lesson-category-section {
+  border: 1px solid rgba(43,108,176,0.15) !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+/* QUIZ PAGE - CHANGE ALL BLACK TO WHITE */
+.light-theme .quiz-container,
+html.light-theme .quiz-container {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+.light-theme .quiz-section,
+.light-theme .quiz-card,
+.light-theme .question-card,
+.light-theme .answer-option,
+html.light-theme .quiz-section,
+html.light-theme .quiz-card,
+html.light-theme .question-card,
+html.light-theme .answer-option {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+/* TEACHER PROFILE PAGE - CHANGE ALL BLACK TO WHITE */
+.light-theme .teacher-profile,
+.light-theme .teacher-profile-container,
+.light-theme .profile-section,
+html.light-theme .teacher-profile,
+html.light-theme .teacher-profile-container,
+html.light-theme .profile-section {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+/* TEACHER PROFILE PAGE - COMPLETE OVERRIDE */
+.light-theme .teacher-profile,
+html.light-theme .teacher-profile,
+.light-theme .teacher-header-section,
+html.light-theme .teacher-header-section,
+.light-theme .teacher-details-section,
+html.light-theme .teacher-details-section {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+  color: #000 !important;
+}
+
+.light-theme .teacher-header-info h1,
+.light-theme .teacher-details-grid h3,
+.light-theme .details-card h3,
+.light-theme .details-card h5,
+.light-theme .summary-card h5,
+.light-theme .info-group label,
+.light-theme .info-group p,
+html.light-theme .teacher-header-info h1,
+html.light-theme .teacher-details-grid h3,
+html.light-theme .details-card h3,
+html.light-theme .details-card h5,
+html.light-theme .summary-card h5,
+html.light-theme .info-group label,
+html.light-theme .info-group p {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  background: transparent !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+}
+
+.light-theme .details-card,
+.light-theme .summary-card,
+.light-theme .courses-card,
+html.light-theme .details-card,
+html.light-theme .summary-card,
+html.light-theme .courses-card {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  color: #333 !important;
+}
+
+.light-theme .courses-list .course-item,
+html.light-theme .courses-list .course-item {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid rgba(43,108,176,0.15) !important;
+  color: #333 !important;
+}
+
+/* TEACHER PROFILE - SCALE DOWN HEADER FOR LIGHT THEME */
+.light-theme .teacher-header-info h1,
+html.light-theme .teacher-header-info h1 {
+  font-size: 1.8rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.light-theme .teacher-qualification,
+html.light-theme .teacher-qualification {
+  font-size: 0.9rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.light-theme .stat-value,
+html.light-theme .stat-value {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+}
+
+.light-theme .stat-label,
+html.light-theme .stat-label {
+  font-size: 0.65rem !important;
+  margin-bottom: 0.35rem !important;
+}
+
+.light-theme .stat,
+html.light-theme .stat {
+  padding: 1rem 1.5rem !important;
+}
+
+.light-theme .teacher-stats,
+html.light-theme .teacher-stats {
+  gap: 1.5rem !important;
+}
+
+.light-theme .stat-email,
+html.light-theme .stat-email {
+  font-size: 0.85rem !important;
+}
+
+.light-theme .teacher-header-content,
+html.light-theme .teacher-header-content {
+  gap: 1.5rem !important;
+}
+
+.light-theme .teacher-avatar-large,
+html.light-theme .teacher-avatar-large {
+  width: 120px !important;
+  height: 120px !important;
+  font-size: 90px !important;
+}
+
+.light-theme .teacher-header-section,
+html.light-theme .teacher-header-section {
+  padding: 3rem 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.light-theme .info-item strong,
+html.light-theme .info-item strong {
+  color: #6f42c1 !important;
+}
+
+/* COURSE ENROLLMENT PAGE - ALREADY DONE BUT ENSURE */
+.light-theme .course-enrollment,
+html.light-theme .course-enrollment {
+  background: #FBF7F0 !important;
+  background-color: #FBF7F0 !important;
+  background-image: none !important;
+}
+
+/* UNIVERSAL RULE - ANY DIV WITH DARK LINEAR GRADIENT */
+.light-theme div[style*="linear-gradient(135deg, #0a0a0a"],
+.light-theme div[style*="linear-gradient(135deg, #0f0f0f"],
+.light-theme div[style*="linear-gradient(135deg, #0"],
+.light-theme [style*="background-color: #0a0a0a"],
+.light-theme [style*="background-color: #0f0f0f"],
+.light-theme [style*="background-color: #1a1a1a"],
+html.light-theme div[style*="linear-gradient(135deg, #0a0a0a"],
+html.light-theme div[style*="linear-gradient(135deg, #0f0f0f"],
+html.light-theme div[style*="linear-gradient(135deg, #0"],
+html.light-theme [style*="background-color: #0a0a0a"],
+html.light-theme [style*="background-color: #0f0f0f"],
+html.light-theme [style*="background-color: #1a1a1a"] {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+html.light-theme .feedback-card,
+.light-theme .feedback-card {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  border-radius: 12px !important;
+  padding: 1.5rem 1rem !important;
+  text-align: center !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+  max-width: 500px !important;
+  margin: 0 auto !important;
+  border: 1px solid rgba(43, 108, 176, 0.15) !important;
+  color: #333 !important;
+}
+
+html.light-theme .feedback-card::before,
+.light-theme .feedback-card::before {
+  background: #2b6cb0 !important;
+  height: 4px !important;
+}
+
+html.light-theme .feedback-icon,
+.light-theme .feedback-icon {
+  font-size: 2.5rem !important;
+  color: #2b6cb0 !important;
+  margin-bottom: 1rem !important;
+}
+
+html.light-theme .feedback-card h3,
+.light-theme .feedback-card h3 {
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  color: #000 !important;
+  margin-bottom: 0.5rem !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #000 !important;
+}
+
+html.light-theme .feedback-card p,
+.light-theme .feedback-card p {
+  font-size: 0.85rem !important;
+  color: #333 !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.5 !important;
+}
+
+html.light-theme .badge-coming-soon,
+.light-theme .badge-coming-soon {
+  display: inline-block !important;
+  background: #2b6cb0 !important;
+  background-color: #2b6cb0 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  border: none !important;
+}
+
+html.light-theme .feedback-card:hover,
+.light-theme .feedback-card:hover {
+  transform: none !important;
+  box-shadow: 0 12px 40px rgba(43, 108, 176, 0.15) !important;
+  border-color: rgba(43, 108, 176, 0.3) !important;
+}
+
+.light-theme .course-detail-col-sidebar .custom-card {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(43, 108, 176, 0.15) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-theme .course-detail-col-sidebar .custom-card-body {
+  background: #FFFFFF !important;
+  color: #333 !important;
+}
+
+.light-theme .course-detail-col-sidebar .custom-card-body h5 {
+  color: #000 !important;
+}
+
+.light-theme .course-detail-col-sidebar .custom-card-body p {
+  color: #666 !important;
+}
+
+.light-theme .course-detail-col-sidebar .custom-card-body strong {
+  color: #000 !important;
+}
+
+/* COURSE DETAIL PAGE - Buttons */
+.light-theme .course-detail .btn-warning {
+  background: #ffc107 !important;
+  color: #000 !important;
+  border: none !important;
+}
+
+.light-theme .course-detail .btn-outline-secondary {
+  color: #2b6cb0 !important;
+  border-color: #2b6cb0 !important;
+}
+
+.light-theme .course-detail .btn-outline-secondary:hover {
+  background: #2b6cb0 !important;
+  color: #fff !important;
+}

@@ -1,12 +1,14 @@
 ﻿import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import "./light-theme.css";
 
 function Navbar({ user, setUser }) {
   const navigate = useNavigate();
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [activeLink, setActiveLink] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [isLight, setIsLight] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -23,6 +25,27 @@ function Navbar({ user, setUser }) {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    // initialize theme from localStorage
+    const stored = localStorage.getItem("theme");
+    const light = stored === "light";
+    setIsLight(light);
+    if (light) document.documentElement.classList.add("light-theme");
+    else document.documentElement.classList.remove("light-theme");
+  }, []);
+
+  const toggleTheme = () => {
+    const newLight = !isLight;
+    setIsLight(newLight);
+    if (newLight) {
+      document.documentElement.classList.add("light-theme");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.documentElement.classList.remove("light-theme");
+      localStorage.setItem("theme", "dark");
+    }
+  };
 
   const handleMessagesClick = () => {
     setShowComingSoon(true);
@@ -64,6 +87,13 @@ function Navbar({ user, setUser }) {
                 </Link>
               </li>
 
+              <li className="nav-item d-flex align-items-center">
+                <button className="nav-link theme-toggle-btn" onClick={toggleTheme} title={isLight ? "Switch to dark" : "Switch to light"}>
+                  {isLight ? <i className="fas fa-moon me-2" aria-hidden="true"></i> : <i className="fas fa-sun me-2" aria-hidden="true"></i>}
+                  {isLight ? "Dark" : "Light"}
+                </button>
+              </li>
+
               {user ? (
                 <>
                   <li className="nav-item">
@@ -78,6 +108,7 @@ function Navbar({ user, setUser }) {
                       Dashboard
                     </Link>
                   </li>
+                  
                   <li className="nav-item">
                     <button
                       className="nav-link messages-btn"

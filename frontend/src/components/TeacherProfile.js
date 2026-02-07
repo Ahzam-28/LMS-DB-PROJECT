@@ -77,15 +77,15 @@ function TeacherProfile() {
               <div className="teacher-stats">
                 <div className="stat">
                   <span className="stat-label">Experience</span>
-                  <span className="stat-value" style={{ color: "white" }}>{teacher.experience} years</span>
+                  <span className="stat-value">{teacher.experience} years</span>
                 </div>
                 <div className="stat">
                   <span className="stat-label">Courses</span>
-                  <span className="stat-value" style={{ color: "white" }}>{teacher.courses_count}</span>
+                  <span className="stat-value">{teacher.courses_count}</span>
                 </div>
                 <div className="stat">
                   <span className="stat-label">Email</span>
-                  <span className="stat-value" style={{ color: "white" }}>{teacher.user_details.email}</span>
+                  <span className="stat-value">{teacher.user_details.email}</span>
                 </div>
               </div>
             </div>
